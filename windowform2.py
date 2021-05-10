@@ -38,6 +38,10 @@ class windowform2():
         self.range_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         #choice range frame
         self.nb_range_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
+        #number of hz range frame
+        self.hzrangeSlctframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
+        #choice hz range frame
+        self.hz_range_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         #filename_label
         self.filename_text = tk.StringVar(self.fileframe)
         self.filename_text.set(" file = 파일을 열어주세요.")
@@ -80,7 +84,7 @@ class windowform2():
         label.pack(side = loc)
 
     def text_input(self, window, string,wid,loc1,loc2):
-        self.label_input(self.range_frame,"  ")
+        self.label_input(window,"  ")
         self.label_input(window, string,loc2)
         text_box = tk.Entry(window, width = wid)
         text_box.pack(side = loc1)
@@ -99,6 +103,8 @@ class windowform2():
     def range_select(self):
         self.widget_clear(self.nb_range_frame)
         self.widget_clear(self.range_frame)
+        self.widget_clear(self.hzrangeSlctframe)
+        self.widget_clear(self.hz_range_frame)        
         
         self.count = 0
         self.range_frame=tk.Frame(self.tool_frame.interior, width=300, height = 150)
@@ -128,9 +134,10 @@ class windowform2():
                 self.label_input(self.list2[j]," ","left")
                 self.list2[j].pack(side="top",fill = 'x')
                 self.list1.append(rng_box)
+                self.list3.append(exp_box)
                 
             self.label_input(self.nb_range_frame,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
-            self.label_input(self.nb_range_frame,"○ 0~" + str(self.work.lngthData) +" 사이로 입력해주세요.","top")
+            self.label_input(self.nb_range_frame,"○ 0~" + str(self.work2.oLngth) +" 사이로 입력해주세요.","top")
             self.nrf_buttonframe=tk.Frame(self.nb_range_frame, width=300, height = 350)
             self.nrf_buttonframe.pack(side="bottom")  
             self.button_input(self.nrf_buttonframe,"입   력",self.hz_range_num,"left")             
@@ -141,12 +148,75 @@ class windowform2():
             pass
 
     def hz_range_num(self):
-        pass
+        self.widget_clear(self.hzrangeSlctframe)
+        self.widget_clear(self.hz_range_frame)
+        
+        start_end_list,exp_list = [], []
+        for st_en_box in self.list1:
+            a = list(map(int, st_en_box.get().split(',')))
+            for i in a:
+                start_end_list.append(i)
+        for e_box in self.list3:
+            exp_list.append(float(e_box.get()))
+            
+        self.work2.getIntrvl(start_end_list,exp_list)
+        
+        self.hzrangeSlctframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
+        self.hzrangeSlctframe.pack(side="top",fill = 'x')
+        self.label_input(self.hzrangeSlctframe,"  ","top")
+        self.hz_range_text_box = self.text_input(self.hzrangeSlctframe,"  ● 주파수 범위 갯수 입력 (1이상 정수만 입력)   ",10,"top","top")
+        self.hzrbuttonframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
+        self.hzrbuttonframe.pack(side="bottom")        
+        self.button_input(self.hzrbuttonframe,"입   력",self.hz_range,"left")
 
+    def hz_range(self):
+        self.widget_clear(self.hzrbuttonframe)
+        self.chrcount = 0;self.chlistcount = 0
+        
+        b = self.hz_range_text_box.get()
+        if self.hz_range_text_box.get() != '' and self.count == 0 and int(self.hz_range_text_box.get()) > 0:
+            self.hzlist1, self.hzlist2, self.hzlist3 = [], [], []
+            self.hz_range_frame = tk.Frame(self.tool_frame.interior, width=300, height = 350)
+            self.hz_range_frame.pack(side="top",fill = 'x')
+            self.label_input(self.hz_range_frame," ● 주파수 범위 입력","top")
+            for i in range(int(self.hz_range_text_box.get())):
+                rng_exp_frame2 = tk.Frame(self.hz_range_frame, width=300, height = 350)
+                self.hzlist2.append(rng_exp_frame2)
+            for j in range( int(self.range_text_box.get())):
+                for k in range(int(self.hz_range_text_box.get())):
+                    self.label_input(self.hz_range_frame,"- " + chr(self.chrcount+65) + " section - ","top")
+                    rng_box2 = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount]," 범위 : ",10,"left","left")
+                    exp_box2 = self.text_input2(self.hzlist2[self.chlistcount], self.hzlist2[self.chlistcount],"   확대 비율 : ",10,"left","left")
+                    self.label_input(self.hzlist2[self.chlistcount]," ","left")
+                    self.hzlist3.append(exp_box2)
+                    self.hzlist2[self.chlistcount].pack(side="top",fill = 'x')
+                    self.hzlist1.append(rng_box2)
+                    self.chlistcount += 1
+                self.chrcount+=1
+                
+            self.label_input(self.hz_range_frame,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
+            self.label_input(self.hz_range_frame,"○ 0~" + str(self.work2.oLngth) +" 사이로 입력해주세요.","top")
+            self.nrf_buttonframe=tk.Frame(self.hz_range_frame, width=300, height = 350)
+            self.nrf_buttonframe.pack(side="bottom")  
+            self.button_input(self.nrf_buttonframe,"입   력",self.confirm,"left")             
+            self.hzrbuttonframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
+            self.hzrbuttonframe.pack(side="bottom")              
+            self.button_input(self.hzrbuttonframe,"갯수 리셋",self.hz_range_num,"left")
+        else:
+            pass
 
+    def confirm(self):
+        
+        start_end_list2,exp_list2 = [], []
+        for st_en_box2 in self.hzlist1:
+            a = list(map(int, st_en_box2.get().split(',')))
+            for i in a:
+                start_end_list2.append(i)
+        for e_box in self.hzlist3:
+            exp_list2.append(float(e_box.get()))
+            
+        self.work2.getFft(start_end_list2,exp_list2)
 
-
-    
 window2 = windowform2()
 
 
