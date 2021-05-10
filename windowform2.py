@@ -10,7 +10,7 @@ class windowform2():
 
         self.window = tk.Tk()
         self.window.title('control')
-        self.window.geometry("600x900+50+50")
+        self.window.geometry("500x900+50+50")
         self.window.resizable(True,True)
         self.mainMenu = tk.Menu(self.window)
 
@@ -45,6 +45,12 @@ class windowform2():
         #filename_label
         self.filename_text = tk.StringVar(self.fileframe)
         self.filename_text.set(" file = 파일을 열어주세요.")
+        #value_label
+        self.dc = tk.StringVar(self.value_frame);self.dc.set("0")
+        self.sr = tk.StringVar(self.value_frame);self.sr.set("0")
+        self.er = tk.StringVar(self.value_frame);self.er.set("None")
+        self.sp = tk.StringVar(self.value_frame);self.sp.set("0")
+        self.fr = tk.StringVar(self.value_frame);self.fr.set("0")        
 
         self.text_label_input(self.fileframe,self.filename_text,'left')
         self.window.mainloop()
@@ -59,6 +65,26 @@ class windowform2():
         self.work2.slctData()
         self.work2.initData()
         self.work2.showData()
+        
+        self.label_input(self.value_frame.interior,"< DC value >")
+        self.text_label_input(self.value_frame.interior, str(self.dc))
+        self.dc.set(self.work2.oDc)
+
+        self.label_input(self.value_frame.interior,"  ")
+        self.label_input(self.value_frame.interior,"< sampling rate >")
+        self.text_label_input(self.value_frame.interior, str(self.sr))
+        self.sr.set(self.work2.Fs)
+
+        self.label_input(self.value_frame.interior,"  ")
+        self.label_input(self.value_frame.interior,"< One point of Hz >")
+        self.text_label_input(self.value_frame.interior, str(self.sp))
+        self.sp.set(self.work2.Fs / self.work2.oLngth)
+
+        self.label_input(self.value_frame.interior,"  ")
+        self.label_input(self.value_frame.interior,"< error >")
+        self.text_label_input(self.value_frame.interior, str(self.er))
+
+        self.fileMenu.entryconfig(0,state = "disable")
         
     def save_file(self):
         self.Y = self.work.saveSgnl()
@@ -163,7 +189,6 @@ class windowform2():
         
         self.hzrangeSlctframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         self.hzrangeSlctframe.pack(side="top",fill = 'x')
-        self.label_input(self.hzrangeSlctframe,"  ","top")
         self.hz_range_text_box = self.text_input(self.hzrangeSlctframe,"  ● 주파수 범위 갯수 입력 (1이상 정수만 입력)   ",10,"top","top")
         self.hzrbuttonframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
         self.hzrbuttonframe.pack(side="bottom")        
@@ -178,6 +203,7 @@ class windowform2():
             self.hzlist1, self.hzlist2, self.hzlist3 = [], [], []
             self.hz_range_frame = tk.Frame(self.tool_frame.interior, width=300, height = 350)
             self.hz_range_frame.pack(side="top",fill = 'x')
+            self.label_input(self.hz_range_frame,"  ","top")
             self.label_input(self.hz_range_frame," ● 주파수 범위 입력","top")
             for i in range(int(self.hz_range_text_box.get())):
                 rng_exp_frame2 = tk.Frame(self.hz_range_frame, width=300, height = 350)
@@ -195,7 +221,9 @@ class windowform2():
                 self.chrcount+=1
                 
             self.label_input(self.hz_range_frame,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
-            self.label_input(self.hz_range_frame,"○ 0~" + str(self.work2.oLngth) +" 사이로 입력해주세요.","top")
+            for i in range(len(self.work2.maxLst)):
+                self.label_input(self.hz_range_frame,"○ 0~" + str(self.work2.maxLst[i]) +" 사이로 입력해주세요.","top")
+
             self.nrf_buttonframe=tk.Frame(self.hz_range_frame, width=300, height = 350)
             self.nrf_buttonframe.pack(side="bottom")  
             self.button_input(self.nrf_buttonframe,"입   력",self.confirm,"left")             
@@ -216,7 +244,11 @@ class windowform2():
             exp_list2.append(float(e_box.get()))
             
         self.work2.getFft(start_end_list2,exp_list2)
+        self.er.set(self.work2.e)
+        self.button_input(self.nrf_buttonframe,"에러 그래프",self.error_show,"left")
 
+    def error_show(self):
+        self.work2.showError()
 window2 = windowform2()
 
 
