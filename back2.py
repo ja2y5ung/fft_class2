@@ -33,7 +33,8 @@ class FuckMePlz:
     phsLst          = []    # phs list of section
     intrvlDataLst   = []    # cutting data
     intrvLst        = []    # valuse of interval
-    resAmpLst       = []    # res for save 
+    resAmpLst       = []    # res for save
+    maxLst          = []
 
     fig1            = 0     # show orignal data
     fig2            = 0     # show selected section
@@ -127,13 +128,13 @@ class FuckMePlz:
         intrvlDataLst   = []
         cntIntrvl       = len( _intrvl ) // 2
         data            = self.oData[0]
-
-
+        self.maxLst     = []
+        
         # 섹션 수 만큼 반복
         for i in range( cntIntrvl ):
             srt     = _intrvl[2*i]
             end     = _intrvl[2*i + 1]
-
+            self.maxLst.append(end-srt)
             # 입력 범위에 문제가 생기면
             if ( srt > end or srt > self.oLngth or end > self.oLngth ):
                 return -1
