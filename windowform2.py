@@ -49,9 +49,9 @@ class windowform2():
         
         self.filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
                                                filetypes = (("txt files", "*.txt"), ("all files", "*.*")))
-        self.filename_text.set(" file = " + str(self.filename))
+        self.filename_text.set(" file = " + str(self.filename[0]))
         self.fileMenu2.entryconfig(0,state = "normal")
-        self.work2.loadFile(self.filename)
+        self.work2.loadFile(self.filename[0])
         self.work2.slctData()
         self.work2.initData()
         self.work2.showData()
@@ -130,7 +130,7 @@ class windowform2():
                 self.list1.append(rng_box)
                 
             self.label_input(self.nb_range_frame,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
-##            self.label_input(self.nb_range_frame,"● 0~" + str(self.work.lngthData) +" 사이로 입력해주세요.","top")
+            self.label_input(self.nb_range_frame,"○ 0~" + str(self.work.lngthData) +" 사이로 입력해주세요.","top")
             self.nrf_buttonframe=tk.Frame(self.nb_range_frame, width=300, height = 350)
             self.nrf_buttonframe.pack(side="bottom")  
             self.button_input(self.nrf_buttonframe,"입   력",self.hz_range_num,"left")             
