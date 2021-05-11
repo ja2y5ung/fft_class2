@@ -36,6 +36,10 @@ class FuckMePlz:
     resAmpLst       = []    # res for save
     maxLst          = []
 
+    e               = 0
+    eY              = 0
+    Y               = 0
+
     fig1            = 0     # show orignal data
     fig2            = 0     # show selected section
     fig3            = 0     # show fft of selected section
@@ -351,7 +355,6 @@ class FuckMePlz:
         p           = self.fig5.add_subplot(1,1,1)
         t           = np.linspace(0,self.oLngth, self.oLngth, endpoint = False )
         
-        breakpoint()
         p.plot(t, self.oData[0] + self.oDc)
         p.plot(t, self.eY, 'r')
         p.set_xlabel('Number of sampls')

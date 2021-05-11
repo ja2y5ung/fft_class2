@@ -205,7 +205,7 @@ class windowform2():
             self.hz_range_frame.pack(side="top",fill = 'x')
             self.label_input(self.hz_range_frame,"  ","top")
             self.label_input(self.hz_range_frame," ● 주파수 범위 입력","top")
-            for i in range(int(self.hz_range_text_box.get())):
+            for i in range( int(self.range_text_box.get()) * int(self.hz_range_text_box.get())):
                 rng_exp_frame2 = tk.Frame(self.hz_range_frame, width=300, height = 350)
                 self.hzlist2.append(rng_exp_frame2)
             for j in range( int(self.range_text_box.get())):
@@ -230,11 +230,12 @@ class windowform2():
             self.hzrbuttonframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
             self.hzrbuttonframe.pack(side="bottom")              
             self.button_input(self.hzrbuttonframe,"갯수 리셋",self.hz_range_num,"left")
+            self.errorGraframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
         else:
             pass
 
     def confirm(self):
-        
+        self.widget_clear(self.errorGraframe)        
         start_end_list2,exp_list2 = [], []
         for st_en_box2 in self.hzlist1:
             a = list(map(int, st_en_box2.get().split(',')))
@@ -245,7 +246,9 @@ class windowform2():
             
         self.work2.getFft(start_end_list2,exp_list2)
         self.er.set(self.work2.e)
-        self.button_input(self.nrf_buttonframe,"에러 그래프",self.error_show,"left")
+        self.errorGraframe = tk.Frame(self.nrf_buttonframe, width=300, height = 350)
+        self.errorGraframe.pack(side="bottom")
+        self.button_input(self.errorGraframe,"에러 그래프",self.error_show,"left")
 
     def error_show(self):
         self.work2.showError()
