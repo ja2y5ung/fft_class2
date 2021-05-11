@@ -237,10 +237,12 @@ class windowform2():
     def sample_choice(self):
         self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         self.samplechoiceframe.pack(side="top",fill = 'x')
-        self.sample_text_box = self.text_input(self.samplechoiceframe,"  ● 주파수 범위 갯수 입력 (1이상 정수만 입력)   ",10,"top","top")
+        self.sample_text_box = self.text_input(self.samplechoiceframe,"  ● 샘플 갯수 입력  ",10,"top","top")
         self.samplebuttonframe = tk.Frame(self.samplechoiceframe, width=300, height = 350)
         self.samplebuttonframe.pack(side="bottom")        
+        self.inptDc_text_box = self.text_input(self.samplechoiceframe,"  ● Input DC 입력  ",10,"top","top")       
         self.button_input(self.samplebuttonframe,"입   력",self.confirm,"left")
+        
         self.errorGraframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
 
     def confirm(self):
