@@ -226,13 +226,22 @@ class windowform2():
 
             self.nrf_buttonframe=tk.Frame(self.hz_range_frame, width=300, height = 350)
             self.nrf_buttonframe.pack(side="bottom")  
-            self.button_input(self.nrf_buttonframe,"입   력",self.confirm,"left")             
+            self.button_input(self.nrf_buttonframe,"입   력",self.sample_choice,"left")             
             self.hzrbuttonframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
             self.hzrbuttonframe.pack(side="bottom")              
             self.button_input(self.hzrbuttonframe,"갯수 리셋",self.hz_range_num,"left")
-            self.errorGraframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
         else:
             pass
+
+
+    def sample_choice(self):
+        self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
+        self.samplechoiceframe.pack(side="top",fill = 'x')
+        self.sample_text_box = self.text_input(self.samplechoiceframe,"  ● 주파수 범위 갯수 입력 (1이상 정수만 입력)   ",10,"top","top")
+        self.samplebuttonframe = tk.Frame(self.samplechoiceframe, width=300, height = 350)
+        self.samplebuttonframe.pack(side="bottom")        
+        self.button_input(self.samplebuttonframe,"입   력",self.confirm,"left")
+        self.errorGraframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
 
     def confirm(self):
         self.widget_clear(self.errorGraframe)        
@@ -246,12 +255,13 @@ class windowform2():
             
         self.work2.getFft(start_end_list2,exp_list2)
         self.er.set(self.work2.e)
-        self.errorGraframe = tk.Frame(self.nrf_buttonframe, width=300, height = 350)
+        self.errorGraframe = tk.Frame(self.samplebuttonframe, width=300, height = 350)
         self.errorGraframe.pack(side="bottom")
         self.button_input(self.errorGraframe,"에러 그래프",self.error_show,"left")
 
     def error_show(self):
         self.work2.showError()
+        
 window2 = windowform2()
 
 
