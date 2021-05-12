@@ -7,6 +7,7 @@
 # 2021 05 10 16:28 반복문을 사용한 코드에서 넘파이 매트릭스 연산으로 바꿈, 조카튼 딥카피를 햇는데도 갑이 바뀐다
 # 2021 05 11 02:49 자고싶다. 에러 그래프 그리고 데이터 저장만 어떻게 하면 될거 같다..
 # 2021 05 11 03:57 오.. 시바.. 데이터 저장까지 어찌 될거 같다.. 잘 수 있ㄷ.. 04:10 파일 저장 잘됫고.. 이제 잠.
+# 2021 05 11 23:44 useless man
 import numpy as np
 from matplotlib import pyplot as plt
 import warnings
@@ -59,6 +60,7 @@ class FuckMePlz:
     eY              = 0
 
     cntSmpl         = 0
+    inptDc          = 0
 
     
 
@@ -68,9 +70,9 @@ class FuckMePlz:
 
 
     # 파일 불러오기 inpt[ 데이터 경로 ] -> outpt[ 데이터 프레임 ]
-    def loadFile(self, _path = 'smallData.txt' ):
+    def loadFile(self, _path = 's.txt' ):
         print('파일 불러오는 중..')
-        self.oFile = np.loadtxt( _path, dtype = np.float16  )
+        self.oFile = np.loadtxt( _path, dtype = np.float64  )
         print('파일 불러오기 완료')
 
 
@@ -92,44 +94,80 @@ class FuckMePlz:
     # 변수 초기화 inpt[ none ] -> outpt[ Data properties ]
     def initData(self, _a = 0):
         step = 144000
-        fft = np.zeros((1,step), dtype = np.float16)
-        dat = np.zeros((1,step), dtype = np.float16)
-        dat2 = np.zeros((1,step), dtype = np.float16)
-        temp = np.zeros((step))
-        cnt = len(self.oData[0])//step
-        
-        for i in range(cnt+1):
-            if i != cnt:
-                srt     = i*step
-                end     = srt + step
-                fft[0:step] = fft[0:step] + sfft(self.oData[0][srt:end], axis = 0 ) / step
-                dat[0:step] = dat[0:step] + self.oData[0][srt:end]
-                dat2[0:step] = dat2[0:step] + self.oData[1][srt:end]
-            else:
-                srt     = i*step
-                end     = len(self.oData[0])-1
-                fft[0:step] = fft[0:step] + (sfft(self.oData[0][srt:],n=step, axis = 0 ) / len(self.oData[0][srt:]) ).reshape(1,step)
-                temp[:(end-srt+1)] = self.oData[0][srt:]
-                dat[0:step] = dat[0:step] + temp
-                temp[:(end-srt+1)] = self.oData[1][srt:]
-                dat2[0:step] = dat2[0:step] + temp
-        fft = fft / (cnt+1)
-        
+##        fft = np.zeros(step).astype(np.complex128)
+##        dat = np.zeros(step)
+##        dat2 = np.zeros(step)
+##        temp = np.zeros(step)
+##        cnt = len(self.oData[0])//step
+##
+##        
+##        for i in range(cnt+1):
+##            if i != cnt:
+##                srt     = i*step
+##                end     = srt + step
+##                fft[0:step] = fft[0:step] + sfft(self.oData[0][srt:end], axis = 0 ) / step
+##                dat[0:step] = dat[0:step] + self.oData[0][srt:end]
+##                dat2[0:step] = dat2[0:step] + self.oData[1][srt:end]
+##            else:
+##                srt     = i*step
+##                end     = len(self.oData[0])-1
+##                fft[0:step] = fft[0:step] + (sfft(self.oData[0][srt:],n=step, axis = 0 ) / len(self.oData[0][srt:]) )
+##                temp[:(end-srt+1)] = self.oData[0][srt:]
+##                dat[0:step] = dat[0:step] + temp
+##                temp[:(end-srt+1)] = self.oData[1][srt:]
+##                dat2[0:step] = dat2[0:step] + temp
+##        fft = fft / (cnt+1)
+
        
         print("변수 초기화 시작")
-        #self.oLngth     = len( self.oData[0] )
-        self.oLngth      = 144000
+        if len(self.oData[0]) >= step:
+            fft = 0
+            self.oLngth = step
+            tempDt = 0
+            tempDt2 = 0
+    
+            fft = 0
+            fft2 = 0
+            cnt = len(self.oData[0])//step
+            
+            for i in range(cnt+1):
+                if i != cnt:
+                    srt = i*step
+                    end = srt + step
+                    fft = fft + sfft(self.oData[0][srt:end], axis = 0 ) / step
+                    tempDt = tempDt + self.oData[0][srt:end]
+                    tempDt2 = tempDt2 + self.oData[1][srt:end]
+                else:
+                    tempDtt = 0
+                    tempDtt2 = 0
+                    srt = i*step
+                    end = srt + step
+                    fft2 = fft2 + sfft(self.oData[0][srt:], axis = 0 ) / (end-srt)
+                    tempDtt = tempDtt + self.oData[0][srt:]
+                    tempDtt2 = tempDtt2 + self.oData[1][srt:]
+
+            tempDt[0: len(self.oData[0])%step] = tempDt[0: len(self.oData[0])%step] + tempDtt
+            tempDt2[0: len(self.oData[0])%step] = tempDt2[0: len(self.oData[0])%step] + tempDtt2
+
+            resDt = tempDt
+            resDt2 = tempDt2
+
+            self.oData[0] = resDt
+            self.oData[1] = resDt2
+        else:
+            self.oLngth = len(self.oData[0])
+
+    
         self.Fs         = 12800
-        self.oDc        = dat.mean()
+        self.oDc        = self.oData[0].mean()
         self.oDc2       = self.oData[1].mean()
         self.oData[0]   = self.oData[0] - self.oDc
+        self.oData[1]   = self.oData[1] - self.oDc2
         half            = self.oLngth // 2
 
-        self.mData  = dat
-        self.mData2  = dat2
 
         self.oFft       = sfft( self.oData[0], axis = 0 ) / self.oLngth
-        self.oAmp       = 2 * abs( self.oFft[0:half] )
+        self.oAmp       = 2 * abs( self.oFft[0:] )
         self.oPhs       = np.angle( self.oFft[0:half], deg = False)
         print('변수 초기화 완료')
 
@@ -140,13 +178,13 @@ class FuckMePlz:
         self.fig1 = plt.figure("원본 데이터")
 
         
-        end = self.oLngth
+        end = len(self.oData[0])
         num = end
         t   = np.linspace(0, end, num, endpoint = False)
 
 
         p   = self.fig1.add_subplot(1,1,1)
-        p   .plot(t, self.mData[0] )
+        p   .plot(t, self.oData[0] )
         p   .set_xlabel('Number of samples')
         p   .set_ylabel('x(N) - dc')
         p   .set_title('Original')
@@ -160,13 +198,14 @@ class FuckMePlz:
     def getIntrvl(self, _intrvl = [0,10], _mult = [1]):
         self.fig2   = plt.figure('원 데이터에서 선택한 구간')
         
-        end = self.oLngth
+        #end = self.oLngth
+        end = len( self.oData[0])
         num = end
         t   = np.linspace(0, end, num, endpoint = False)
         
         p   = self.fig2.add_subplot(1,1,1)
         plt.cla()
-        p   .plot(t, self.mData[0] )
+        p   .plot(t, self.oData[0] )
         p   .set_xlabel('Number of sample')
         p   .set_ylabel('x(N) - dc')
         
@@ -175,8 +214,8 @@ class FuckMePlz:
         intrvlDataLst   = []
         intrvlDataLst2  = []
         cntIntrvl       = len( _intrvl ) // 2
-        data            = self.mData[0]
-        data2           = self.mData2[0]
+        data            = self.oData[0]
+        data2           = self.oData[1]
         self.maxLst     = []
         
         
@@ -239,9 +278,9 @@ class FuckMePlz:
         for i in range( cntIntrvl ):
             half    = len( data[i] ) // 2
 
-            offSet  = data[i].mean()
+            
 
-            fft     = sfft(data[i] - offSet, axis = 0) / ( half*2 )
+            fft     = sfft(data[i], axis = 0) / ( half*2 )
             amp     = 2 * abs( fft[0:half] )
             phs     = np.angle( fft[0:half], deg = False)
 
@@ -267,7 +306,7 @@ class FuckMePlz:
 
             p = self.fig3.add_subplot(2, cntIntrvl, 1 + 2*i - i )
             plt.cla()
-            p.plot(cut, data[i] - offSet)
+            p.plot(cut, data[i])
             p.set_title('Section ' + chr(65+i))
             p.set_xlabel('Number of samples')
             p.set_ylabel('x(N) - dc')
@@ -361,10 +400,12 @@ class FuckMePlz:
         self.fig4   = plt.figure('합성 결과')
         plt.clf()
         self.cntSmpl = _cntSmpl
+        self.inptDc = _dc
         print("신호 생성중..")
         cntIntrvl   = len( self.intrvlDataLst )
-
+        self.cntSmpl = _cntSmpl
         Y           = 0
+        YY          = 0
         Y2          = 0
         eY          = 0
         resY        = 0
@@ -382,33 +423,58 @@ class FuckMePlz:
             phs2     = self.phsLst2[i]
 
 
-            f       = 1 / self.oLngth
+            f       = 1 / len( self.oData[0])
             t       = np.arange(0, _cntSmpl, 1)
             et      = np.arange(0, self.oLngth)
             n       = np.arange(0, lngth, 1)
             tn      = n.reshape(lngth,1)
 
+            
 
 
-            #메모리 크기 조절 하는 부분
+
             v = 1000
             mcnt = _cntSmpl // v
+            mcnt = int(np.ceil((len(data)//2)/v)) 
+            for i in range(mcnt):
+                print( round(i/mcnt*100,2),'%')
+                if i != mcnt-1:
+                    A = amp.reshape(lngth,1)[i*v:i*v+v]
+                    w = 2 * pi * f * tn[i*v:i*v+v]
+                    q = phs.reshape(lngth,1)[i*v:i*v+v]+ (pi/2)
+                    Y = Y + A * sin( w*t + q )
+
+                    A2  = amp2.reshape(lngth,1)[i*v:i*v+v]
+                    w2 = 2 * pi * f * tn[i*v:i*v+v]
+                    q2 = phs2.reshape(lngth,1)[i*v:i*v+v]+ (pi/2)
+                    Y2 = Y2 + A2 * sin( w2*t + q2 )
+                else:
+                    YY = 0
+                    YY2 = 0
+                    A =  amp.reshape(lngth,1)[i*v:]
+                    w = 2 * pi * f * tn[i*v:]
+                    q = phs.reshape(lngth,1)[i*v:]+ (pi/2)
+                    YY = YY + A * sin( w*t + q )
+
+                    A2  = amp2.reshape(lngth,1)[i*v:]
+                    w2 = 2 * pi * f * tn[i*v:]
+                    q2 = phs2.reshape(lngth,1)[i*v:]+ (pi/2)
+                    YY2 = YY2 + A2 * sin( w2*t + q2 )
+
+            if mcnt == 1:
+                Y = YY.sum(axis = 0)
+                Y2 = YY2.sum(axis = 0)
+
+            else:
+                Yres = np.vstack((Y,YY))
+                Yres2 = np.vstack((Y2,YY2))
             
-            for i in range(50):
-                print(  str(round(i/50,2)*100) + '%'   )
-                A = amp.reshape(lngth,1)[i*v:i*v+v]
-                w = 2 * pi * f * tn[i*v:i*v+v]
-                q = phs.reshape(lngth,1)[i*v:i*v+v]+ (pi/2)
-                Y = Y + A * sin( w*t + q )
-
-                A2  = amp2.reshape(lngth,1)[i*v:i*v+v]
-                w2 = 2 * pi * f * tn[i*v:i*v+v]
-                q2 = phs2.reshape(lngth,1)[i*v:i*v+v]+ (pi/2)
-                Y2 = Y2 + A2 * sin( w2*t + q2 )
+                Y = Yres.sum(axis = 0 )
+                Y2 = Yres2.sum(axis =0)
 
 
-            Y = Y.sum(axis = 0)
-            Y2 = Y2.sum(axis = 0 )
+
+
 
         self.Y  = Y + _dc
         self.Y2 = Y + _dc
@@ -422,7 +488,6 @@ class FuckMePlz:
         p.set_ylabel('x(N) + input dc')
         plt.grid(True)
 
-
         self.fig4.show()
         print("신호 생성 완료")
 
@@ -431,13 +496,12 @@ class FuckMePlz:
         self.fig5   = plt.figure('에러 그래프')
         plt.clf()
         p           = self.fig5.add_subplot(1,1,1)
-        t           = np.linspace(0,self.oLngth, self.oLngth, endpoint = False )
-        f           = 1 / self.oLngth
+        t           = np.linspace(0,len(self.oData[0]), len(self.oData[0]), endpoint = False )
+        f           = 1 / len( self.oData[0])
         cntIntrvl   = len( self.intrvlDataLst )
-        Y = 0
+        eY = 0
         print('에러 계산중...')
         for i in range( cntIntrvl ):
-            
             data    = self.intrvlDataLst[i]
             lngth   = len( data ) // 2
 
@@ -445,21 +509,49 @@ class FuckMePlz:
             phs     = self.phsLst[i]
             n       = np.arange(0, lngth, 1)
             tn      = n.reshape(lngth,1)
-            et      = np.arange(0, self.oLngth)
+            et      = np.arange(0, len( self.oData[0]))
+
+
 
             v = 1000
-            for i in range(50):
-                print(  str(round(i/50,2)*100) + '%'   )
-                A = amp.reshape(lngth,1)[i*v:i*v+v]
-                w = 2 * pi * f * tn[i*v:i*v+v]
-                q = phs.reshape(lngth,1)[i*v:i*v+v]+ (pi/2)
-                Y = Y + A * sin( w*et + q )
+            mcnt = self.cntSmpl // v
+            mcnt = int(np.ceil((len(data)//2)/v))
+            for i in range(mcnt):
+                print( round(i/mcnt*100,2),'%')
+                if i != mcnt-1:
+                    A = amp.reshape(lngth,1)[i*v:i*v+v]
+                    w = 2 * pi * f * tn[i*v:i*v+v]
+                    q = phs.reshape(lngth,1)[i*v:i*v+v]+ (pi/2)
+                    eY = eY + A * sin( w*et + q )
 
-            Y = Y.sum(axis = 0) + self.inptDc
+                else:
+                    eY2 = 0
+                    A =  amp.reshape(lngth,1)[i*v:]
+                    w = 2 * pi * f * tn[i*v:]
+                    q = phs.reshape(lngth,1)[i*v:]+ (pi/2)
+                    eY2 = eY2 + A * sin( w*et + q )
+
+
+
+            if mcnt == 1:
+                eY = eY2.sum(axis = 0)
+
+            else:
+                Yres = np.vstack((eY,eY2))
             
-        
-        p.plot(t, self.mData[0] + self.oDc)
-        p.plot(t, Y, 'r')
+                eY = Yres.sum(axis = 0 )
+  
+
+
+            
+
+            #Yres = np.vstack((eY,eY2))
+            
+            #eY = Yres.sum(axis = 0 ) + self.inptDc
+
+            eY = eY + self.inptDc
+        p.plot(t, self.oData[0] + self.oDc)
+        p.plot(t, eY , 'r')
         p.set_xlabel('Number of sampls')
         p.set_ylabel('x(N)')
         p.set_title('error')
@@ -467,7 +559,7 @@ class FuckMePlz:
 
         plt.grid(True)
 
-        e = (self.mData[0] - Y)**2
+        e = (self.oData[0] - eY)**2
         e = np.sqrt(e.mean())
         self.e = e
         self.fig5.show()
@@ -491,12 +583,58 @@ if __name__ == '__main__':
     fuck.showData()
     
     # 데이터 작업
-    fuck.getIntrvl([0, 100000], [1])
-    fuck.getFft([0, 100000//2],[1])
-    fuck.genSgnl(100000,0)
+    fuck.getIntrvl([0,2500])
+    fuck.getFft([0,1250], [1])
+    fuck.genSgnl(2500, fuck.oDc)
     fuck.showError()
-        
-                
+
+
+
+
+##              교수님이 짜신 부분      
+##            #메모리 크기 조절 하는 부분
+##            v = 1000
+##            cnt = len(amp)//v
+##            t = 1200
+##            tcnt = _cntSmpl//t
+##            Y = np.zeros((len(amp),_cntSmpl))
+##            Y2 = np.zeros((len(amp),_cntSmpl))
+##
+##
+##            for i in range(cnt+1):
+##                if i!=cnt :
+##                    for j in range(tcnt+1):
+##                        if j != tcnt:
+##                            tt = np.arange(j*t,(j+1)*t,1)
+##                        else:
+##                            tt = np.arange(j*t,j*t+_cntSmpl%t,1)
+##
+##                        print(  str(round(i/50,2)*100) + '%'   )
+##                        A = amp.reshape(lngth,1)[i*v:i*v+v]
+##                        w = 2 * pi * f * tn[i*v:i*v+v]
+##                        q = phs.reshape(lngth,1)[i*v:i*v+v]+ (pi/2)
+##                        Y[i*v:i*v+v, tt] = Y[i*v:i*v+v,tt] + A * sin( w*tt + q )
+##
+##                        A2  = amp2.reshape(lngth,1)[i*v:i*v+v]
+##                        w2 = 2 * pi * f * tn[i*v:i*v+v]
+##                        q2 = phs2.reshape(lngth,1)[i*v:i*v+v]+ (pi/2)
+##                        Y2[i*v:i*v+v, tt] = Y2[i*v:i*v+v, tt] + A2 * sin( w2*t + q2 )
+##                else:
+##                    for j in range(tcnt+1):
+##                        if j != tcnt:
+##                            tt = np.arange(j*t,(j+1)*t,1)
+##                        else:
+##                            tt = np.arange(j*t,j*t+_cntSmpl%t,1)
+##                    print(  str(round(i/50,2)*100) + '%'   )
+##                    A = amp.reshape(lngth,1)[i*v:]
+##                    w = 2 * pi * f * tn[i*v:]
+##                    q = phs.reshape(lngth,1)[i*v:]+ (pi/2)
+##                    Y[i*v:, tt] = Y[i*v:, tt] + A * sin( w*tt + q )
+##
+##                    A2  = amp2.reshape(lngth,1)[i*v:]
+##                    w2 = 2 * pi * f * t,n[i*v:]
+##                    q2 = phs2.reshape(lngth,1)[i*v:]+ (pi/2)
+##                    Y2[i*v:, tt] = Y2[i*v:, tt] + A2 * sin( w2*t + q2 )
         
         
     
