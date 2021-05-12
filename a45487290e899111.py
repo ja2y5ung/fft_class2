@@ -70,7 +70,7 @@ class FuckMePlz:
 
 
     # 파일 불러오기 inpt[ 데이터 경로 ] -> outpt[ 데이터 프레임 ]
-    def loadFile(self, _path = 's.txt' ):
+    def loadFile(self, _path = 'fucking_data.txt' ):
         print('파일 불러오는 중..')
         self.oFile = np.loadtxt( _path, dtype = np.float16  )
         print('파일 불러오기 완료')
@@ -165,7 +165,7 @@ class FuckMePlz:
 
 
         self.oFft       = sfft( self.oData[0], axis = 0 ) / self.oLngth
-        self.oAmp       = 2 * abs( self.oFft[0:half] )
+        self.oAmp       = 2 * abs( self.oFft[0:] )
         self.oPhs       = np.angle( self.oFft[0:half], deg = False)
         print('변수 초기화 완료')
 
@@ -427,7 +427,7 @@ class FuckMePlz:
             n       = np.arange(0, lngth, 1)
             tn      = n.reshape(lngth,1)
 
-
+            
 
 
 
@@ -459,12 +459,17 @@ class FuckMePlz:
                     q2 = phs2.reshape(lngth,1)[i*v:]+ (pi/2)
                     YY2 = YY2 + A2 * sin( w2*t + q2 )
 
+            breakpoint()
+            if mcnt == 1:
+                Y = YY.sum(axis = 0)
+                Y2 = YY2.sum(axis = 0)
 
-            Yres = np.vstack((Y,YY))
-            Yres2 = np.vstack((Y2,YY2))
+            else:
+                Yres = np.vstack((Y,YY))
+                Yres2 = np.vstack((Y2,YY2))
             
-            Y = Yres.sum(axis = 0 )
-            Y2 = Yres2.sum(axis =0)
+                Y = Yres.sum(axis = 0 )
+                Y2 = Yres2.sum(axis =0)
 
 
 
@@ -505,6 +510,8 @@ class FuckMePlz:
             tn      = n.reshape(lngth,1)
             et      = np.arange(0, len( self.oData[0]))
 
+
+
             v = 1000
             mcnt = self.cntSmpl // v
             mcnt = int(np.ceil((len(data)//2)/v))
@@ -523,12 +530,24 @@ class FuckMePlz:
                     q = phs.reshape(lngth,1)[i*v:]+ (pi/2)
                     eY2 = eY2 + A * sin( w*et + q )
 
-            
 
+
+            if mcnt == 1:
+                eY = eY2.sum(axis = 0)
+
+            else:
+                Yres = np.vstack((eY,eY2))
+            
+                eY = Yres.sum(axis = 0 )
+  
+
+
+            
 
             Yres = np.vstack((eY,eY2))
             
             eY = Yres.sum(axis = 0 ) + self.inptDc
+
             
         p.plot(t, self.oData[0] + self.oDc)
         p.plot(t, eY, 'r')
@@ -563,9 +582,9 @@ if __name__ == '__main__':
     fuck.showData()
     
     # 데이터 작업
-    fuck.getIntrvl([0,2500])
-    fuck.getFft([0,1250])
-    fuck.genSgnl(2500, fuck.oDc)
+    fuck.getIntrvl([1000,2000])
+    fuck.getFft([0,100,300,400], [1,1])
+    fuck.genSgnl(1000, fuck.oDc)
     fuck.showError()
 
 
