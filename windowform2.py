@@ -263,7 +263,6 @@ class windowform2():
             
         self.work2.getFft(start_end_list2,exp_list2)
         self.work2.genSgnl(float(self.sample_text_box.get()),float(self.inptDc_text_box.get()))
-        self.er.set(self.work2.e)
         self.ipdc.set(float(self.inptDc_text_box.get()))
         self.errorGraframe = tk.Frame(self.samplebuttonframe, width=300, height = 350)
         self.errorGraframe.pack(side="bottom")
@@ -271,6 +270,7 @@ class windowform2():
 
     def error_show(self):
         self.work2.showError()
+        self.er.set(self.work2.e)
         
 window2 = windowform2()
 

@@ -459,7 +459,6 @@ class FuckMePlz:
                     q2 = phs2.reshape(lngth,1)[i*v:]+ (pi/2)
                     YY2 = YY2 + A2 * sin( w2*t + q2 )
 
-            breakpoint()
             if mcnt == 1:
                 Y = YY.sum(axis = 0)
                 Y2 = YY2.sum(axis = 0)
