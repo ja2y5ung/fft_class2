@@ -346,7 +346,7 @@ class FuckMePlz:
 
 
         cntIntrvl   = len( amp ) 
-        cntMult     = len( _mult ) // 2
+        cntMult     = len( _mult ) // cntIntrvl
 
         # 섹션 갯수 만큼 반복
         for i in range( cntIntrvl ):
@@ -366,8 +366,8 @@ class FuckMePlz:
 
                 # 여러 구간에 색 칠한 그래프 그릴려고 다시 반복
                 for k in range( cntMult ):
-                    srt     = _intrvl[2*i+k*cntMult] 
-                    end     = _intrvl[2*i+k*cntMult+1]
+                    srt     = _intrvl[cntMult*i+k*cntMult] 
+                    end     = _intrvl[cntMult*i+k*cntMult+1]
                     cutHz   = np.linspace(srt, end, end - srt, endpoint = False )
                     p.stem(cutHz, self.ampLst[i][srt:end], linefmt = 'orange', markerfmt = 'none' )
                     plt.grid(True)

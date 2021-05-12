@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog
 from ttkwidgets.frames import ScrolledFrame
-##from back2 import FuckMePlz
-from a45487290e899111 import FuckMePlz
+from back2 import FuckMePlz
+##from a45487290e899111 import FuckMePlz
 
 class windowform2():
 
@@ -43,6 +43,8 @@ class windowform2():
         self.hzrangeSlctframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         #choice hz range frame
         self.hz_range_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
+        #sample choice frame
+        self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         #filename_label
         self.filename_text = tk.StringVar(self.fileframe)
         self.filename_text.set(" file = 파일을 열어주세요.")
@@ -136,7 +138,9 @@ class windowform2():
         self.widget_clear(self.nb_range_frame)
         self.widget_clear(self.range_frame)
         self.widget_clear(self.hzrangeSlctframe)
-        self.widget_clear(self.hz_range_frame)        
+        self.widget_clear(self.hz_range_frame)
+        self.widget_clear(self.samplechoiceframe)
+        
         
         self.count = 0
         self.range_frame=tk.Frame(self.tool_frame.interior, width=300, height = 150)
@@ -182,6 +186,8 @@ class windowform2():
     def hz_range_num(self):
         self.widget_clear(self.hzrangeSlctframe)
         self.widget_clear(self.hz_range_frame)
+        self.widget_clear(self.samplechoiceframe)
+        
         
         start_end_list,exp_list = [], []
         for st_en_box in self.list1:
@@ -228,7 +234,7 @@ class windowform2():
                 
             self.label_input(self.hz_range_frame,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
             for i in range(len(self.work2.maxLst)):
-                self.label_input(self.hz_range_frame,"○ 0~" + str(self.work2.maxLst[i]//2) +" 사이로 입력해주세요.","top")
+                self.label_input(self.hz_range_frame,"○ "+chr(i+65)+" : 0~" + str(self.work2.maxLst[i]//2) +" 사이로 입력해주세요.","top")
 
             self.nrf_buttonframe=tk.Frame(self.hz_range_frame, width=300, height = 350)
             self.nrf_buttonframe.pack(side="bottom")  
@@ -241,6 +247,14 @@ class windowform2():
 
 
     def sample_choice(self):
+        start_end_list2,exp_list2 = [], []
+        for st_en_box2 in self.hzlist1:
+            a = list(map(int, st_en_box2.get().split(',')))
+            for i in a:
+                start_end_list2.append(i)
+        for e_box in self.hzlist3:
+            exp_list2.append(float(e_box.get()))         
+        self.work2.getFft(start_end_list2,exp_list2)
         self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         self.samplechoiceframe.pack(side="top",fill = 'x')
         self.sample_text_box = self.text_input(self.samplechoiceframe,"  ● 샘플 갯수 입력  ",10,"top","top")
@@ -250,20 +264,10 @@ class windowform2():
         self.button_input(self.samplebuttonframe,"입   력",self.confirm,"left")
         
         self.errorGraframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
-
+        
     def confirm(self):
         self.widget_clear(self.errorGraframe)        
-        start_end_list2,exp_list2 = [], []
-        for st_en_box2 in self.hzlist1:
-            a = list(map(int, st_en_box2.get().split(',')))
-            for i in a:
-                start_end_list2.append(i)
-        for e_box in self.hzlist3:
-            exp_list2.append(float(e_box.get()))
-            
-        self.work2.getFft(start_end_list2,exp_list2)
         self.work2.genSgnl(float(self.sample_text_box.get()),float(self.inptDc_text_box.get()))
-        self.er.set(self.work2.e)
         self.ipdc.set(float(self.inptDc_text_box.get()))
         self.errorGraframe = tk.Frame(self.samplebuttonframe, width=300, height = 350)
         self.errorGraframe.pack(side="bottom")
@@ -271,6 +275,7 @@ class windowform2():
 
     def error_show(self):
         self.work2.showError()
+        self.er.set(self.work2.e)
         
 window2 = windowform2()
 
