@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog
 from ttkwidgets.frames import ScrolledFrame
-from back2 import FuckMePlz
+##from back2 import FuckMePlz
+from a45487290e899111 import FuckMePlz
 
 class windowform2():
 
@@ -48,9 +49,10 @@ class windowform2():
         #value_label
         self.dc = tk.StringVar(self.value_frame);self.dc.set("0")
         self.sr = tk.StringVar(self.value_frame);self.sr.set("0")
-        self.er = tk.StringVar(self.value_frame);self.er.set("None")
         self.sp = tk.StringVar(self.value_frame);self.sp.set("0")
-        self.fr = tk.StringVar(self.value_frame);self.fr.set("0")        
+        self.fr = tk.StringVar(self.value_frame);self.fr.set("0")
+        self.ipdc = tk.StringVar(self.value_frame);self.ipdc.set("None")       
+        self.er = tk.StringVar(self.value_frame);self.er.set("None")       
 
         self.text_label_input(self.fileframe,self.filename_text,'left')
         self.window.mainloop()
@@ -79,6 +81,10 @@ class windowform2():
         self.label_input(self.value_frame.interior,"< One point of Hz >")
         self.text_label_input(self.value_frame.interior, str(self.sp))
         self.sp.set(self.work2.Fs / self.work2.oLngth)
+
+        self.label_input(self.value_frame.interior,"  ")
+        self.label_input(self.value_frame.interior,"< Input DC Value >")
+        self.text_label_input(self.value_frame.interior, str(self.ipdc))
 
         self.label_input(self.value_frame.interior,"  ")
         self.label_input(self.value_frame.interior,"< error >")
@@ -222,7 +228,7 @@ class windowform2():
                 
             self.label_input(self.hz_range_frame,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
             for i in range(len(self.work2.maxLst)):
-                self.label_input(self.hz_range_frame,"○ 0~" + str(self.work2.maxLst[i]) +" 사이로 입력해주세요.","top")
+                self.label_input(self.hz_range_frame,"○ 0~" + str(self.work2.maxLst[i]//2) +" 사이로 입력해주세요.","top")
 
             self.nrf_buttonframe=tk.Frame(self.hz_range_frame, width=300, height = 350)
             self.nrf_buttonframe.pack(side="bottom")  
@@ -256,7 +262,9 @@ class windowform2():
             exp_list2.append(float(e_box.get()))
             
         self.work2.getFft(start_end_list2,exp_list2)
+        self.work2.genSgnl(float(self.sample_text_box.get()),float(self.inptDc_text_box.get()))
         self.er.set(self.work2.e)
+        self.ipdc.set(float(self.inptDc_text_box.get()))
         self.errorGraframe = tk.Frame(self.samplebuttonframe, width=300, height = 350)
         self.errorGraframe.pack(side="bottom")
         self.button_input(self.errorGraframe,"에러 그래프",self.error_show,"left")
