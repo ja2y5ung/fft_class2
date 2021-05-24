@@ -70,9 +70,9 @@ class FuckMePlz:
 
 
     # 파일 불러오기 inpt[ 데이터 경로 ] -> outpt[ 데이터 프레임 ]
-    def loadFile(self, _path = 'fucking_data.txt' ):
+    def loadFile(self, _path = 's.txt' ):
         print('파일 불러오는 중..')
-        self.oFile = np.loadtxt( _path, dtype = np.float16  )
+        self.oFile = np.loadtxt( _path, dtype = np.float64  )
         print('파일 불러오기 완료')
 
 
@@ -156,11 +156,13 @@ class FuckMePlz:
             self.oData[1] = resDt2
         else:
             self.oLngth = len(self.oData[0])
-            
+
+    
         self.Fs         = 12800
         self.oDc        = self.oData[0].mean()
         self.oDc2       = self.oData[1].mean()
         self.oData[0]   = self.oData[0] - self.oDc
+        self.oData[1]   = self.oData[1] - self.oDc2
         half            = self.oLngth // 2
 
 
@@ -276,9 +278,9 @@ class FuckMePlz:
         for i in range( cntIntrvl ):
             half    = len( data[i] ) // 2
 
-            offSet  = data[i].mean()
+            
 
-            fft     = sfft(data[i] - offSet, axis = 0) / ( half*2 )
+            fft     = sfft(data[i], axis = 0) / ( half*2 )
             amp     = 2 * abs( fft[0:half] )
             phs     = np.angle( fft[0:half], deg = False)
 
@@ -304,7 +306,7 @@ class FuckMePlz:
 
             p = self.fig3.add_subplot(2, cntIntrvl, 1 + 2*i - i )
             plt.cla()
-            p.plot(cut, data[i] - offSet)
+            p.plot(cut, data[i])
             p.set_title('Section ' + chr(65+i))
             p.set_xlabel('Number of samples')
             p.set_ylabel('x(N) - dc')
@@ -344,7 +346,7 @@ class FuckMePlz:
 
 
         cntIntrvl   = len( amp ) 
-        cntMult     = len( _mult ) // 2
+        cntMult     = len( _mult ) // cntIntrvl
 
         # 섹션 갯수 만큼 반복
         for i in range( cntIntrvl ):
@@ -364,8 +366,8 @@ class FuckMePlz:
 
                 # 여러 구간에 색 칠한 그래프 그릴려고 다시 반복
                 for k in range( cntMult ):
-                    srt     = _intrvl[2*i+k*cntMult] 
-                    end     = _intrvl[2*i+k*cntMult+1]
+                    srt     = _intrvl[cntMult*i+k*cntMult] 
+                    end     = _intrvl[cntMult*i+k*cntMult+1]
                     cutHz   = np.linspace(srt, end, end - srt, endpoint = False )
                     p.stem(cutHz, self.ampLst[i][srt:end], linefmt = 'orange', markerfmt = 'none' )
                     plt.grid(True)
@@ -543,13 +545,13 @@ class FuckMePlz:
 
             
 
-            Yres = np.vstack((eY,eY2))
+            #Yres = np.vstack((eY,eY2))
             
-            eY = Yres.sum(axis = 0 ) + self.inptDc
+            #eY = Yres.sum(axis = 0 ) + self.inptDc
 
-            
+            eY = eY + self.inptDc
         p.plot(t, self.oData[0] + self.oDc)
-        p.plot(t, eY, 'r')
+        p.plot(t, eY , 'r')
         p.set_xlabel('Number of sampls')
         p.set_ylabel('x(N)')
         p.set_title('error')
@@ -581,9 +583,9 @@ if __name__ == '__main__':
     fuck.showData()
     
     # 데이터 작업
-    fuck.getIntrvl([1000,2000])
-    fuck.getFft([0,100,300,400], [1,1])
-    fuck.genSgnl(1000, fuck.oDc)
+    fuck.getIntrvl([0,2500])
+    fuck.getFft([0,1250], [1])
+    fuck.genSgnl(2500, fuck.oDc)
     fuck.showError()
 
 
