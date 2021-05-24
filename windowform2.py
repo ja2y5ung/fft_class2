@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import filedialog
 from ttkwidgets.frames import ScrolledFrame
 from back2 import FuckMePlz
-##from a45487290e899111 import FuckMePlz
 
 class windowform2():
 
@@ -51,10 +50,9 @@ class windowform2():
         #value_label
         self.dc = tk.StringVar(self.value_frame);self.dc.set("0")
         self.sr = tk.StringVar(self.value_frame);self.sr.set("0")
+        self.er = tk.StringVar(self.value_frame);self.er.set("None")
         self.sp = tk.StringVar(self.value_frame);self.sp.set("0")
-        self.fr = tk.StringVar(self.value_frame);self.fr.set("0")
-        self.ipdc = tk.StringVar(self.value_frame);self.ipdc.set("None")       
-        self.er = tk.StringVar(self.value_frame);self.er.set("None")       
+        self.fr = tk.StringVar(self.value_frame);self.fr.set("0")        
 
         self.text_label_input(self.fileframe,self.filename_text,'left')
         self.window.mainloop()
@@ -85,12 +83,10 @@ class windowform2():
         self.sp.set(self.work2.Fs / self.work2.oLngth)
 
         self.label_input(self.value_frame.interior,"  ")
-        self.label_input(self.value_frame.interior,"< Input DC Value >")
-        self.text_label_input(self.value_frame.interior, str(self.ipdc))
-
-        self.label_input(self.value_frame.interior,"  ")
         self.label_input(self.value_frame.interior,"< error >")
         self.text_label_input(self.value_frame.interior, str(self.er))
+
+        self.combobox(self.fileframe)
 
         self.fileMenu.entryconfig(0,state = "disable")
         
@@ -134,13 +130,24 @@ class windowform2():
         button = tk.Button(window, width = wid,text = string,command = cmnd)
         button.pack(side=loc)
 
+    def combobox(self, window):
+        values = [str(i) for i in range(1,5)]
+        self.combobox = tk.ttk.Combobox(window, height=15, values = values)
+        self.label_input(self.fileframe,"< Data Select >")
+        self.combobox.set("데이터를 선택 해주세요.")
+        self.combobox.pack()
+        self.combobox.bind("<<ComboboxSelected>>", self.callbackFunc)
+        self.label_input(window,"   ")
+
+    def callbackFunc(self, event):
+        pass
+
     def range_select(self):
         self.widget_clear(self.nb_range_frame)
         self.widget_clear(self.range_frame)
         self.widget_clear(self.hzrangeSlctframe)
         self.widget_clear(self.hz_range_frame)
         self.widget_clear(self.samplechoiceframe)
-        
         
         self.count = 0
         self.range_frame=tk.Frame(self.tool_frame.interior, width=300, height = 150)
@@ -186,8 +193,6 @@ class windowform2():
     def hz_range_num(self):
         self.widget_clear(self.hzrangeSlctframe)
         self.widget_clear(self.hz_range_frame)
-        self.widget_clear(self.samplechoiceframe)
-        
         
         start_end_list,exp_list = [], []
         for st_en_box in self.list1:
@@ -234,7 +239,7 @@ class windowform2():
                 
             self.label_input(self.hz_range_frame,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
             for i in range(len(self.work2.maxLst)):
-                self.label_input(self.hz_range_frame,"○ "+chr(i+65)+" : 0~" + str(self.work2.maxLst[i]//2) +" 사이로 입력해주세요.","top")
+                self.label_input(self.hz_range_frame,"○ 0~" + str(self.work2.maxLst[i]) +" 사이로 입력해주세요.","top")
 
             self.nrf_buttonframe=tk.Frame(self.hz_range_frame, width=300, height = 350)
             self.nrf_buttonframe.pack(side="bottom")  
@@ -247,35 +252,32 @@ class windowform2():
 
 
     def sample_choice(self):
+        self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
+        self.samplechoiceframe.pack(side="top",fill = 'x')
+        self.sample_text_box = self.text_input(self.samplechoiceframe,"  ● 샘플 갯수 입력  ",10,"top","top")
+        self.samplebuttonframe = tk.Frame(self.samplechoiceframe, width=300, height = 350)
+        self.samplebuttonframe.pack(side="bottom")        
+        self.button_input(self.samplebuttonframe,"입   력",self.confirm,"left")
+        self.errorGraframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
+
+    def confirm(self):
+        self.widget_clear(self.errorGraframe)        
         start_end_list2,exp_list2 = [], []
         for st_en_box2 in self.hzlist1:
             a = list(map(int, st_en_box2.get().split(',')))
             for i in a:
                 start_end_list2.append(i)
         for e_box in self.hzlist3:
-            exp_list2.append(float(e_box.get()))         
+            exp_list2.append(float(e_box.get()))
+            
         self.work2.getFft(start_end_list2,exp_list2)
-        self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
-        self.samplechoiceframe.pack(side="top",fill = 'x')
-        self.sample_text_box = self.text_input(self.samplechoiceframe,"  ● 샘플 갯수 입력  ",10,"top","top")
-        self.samplebuttonframe = tk.Frame(self.samplechoiceframe, width=300, height = 350)
-        self.samplebuttonframe.pack(side="bottom")        
-        self.inptDc_text_box = self.text_input(self.samplechoiceframe,"  ● Input DC 입력  ",10,"top","top")       
-        self.button_input(self.samplebuttonframe,"입   력",self.confirm,"left")
-        
-        self.errorGraframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
-        
-    def confirm(self):
-        self.widget_clear(self.errorGraframe)        
-        self.work2.genSgnl(float(self.sample_text_box.get()),float(self.inptDc_text_box.get()))
-        self.ipdc.set(float(self.inptDc_text_box.get()))
+        self.er.set(self.work2.e)
         self.errorGraframe = tk.Frame(self.samplebuttonframe, width=300, height = 350)
         self.errorGraframe.pack(side="bottom")
         self.button_input(self.errorGraframe,"에러 그래프",self.error_show,"left")
 
     def error_show(self):
         self.work2.showError()
-        self.er.set(self.work2.e)
         
 window2 = windowform2()
 
