@@ -1,12 +1,12 @@
 import tkinter as tk
 from tkinter import filedialog
 from ttkwidgets.frames import ScrolledFrame
-from back2 import fuckMe
+from ff2_210524 import back
 
 class windowform2():
 
     def __init__(self):
-        self.work2 = fuckMe()
+        self.work2 = back()
 
         self.window = tk.Tk()
         self.window.title('control')
@@ -23,17 +23,27 @@ class windowform2():
 
         self.fileMenu2 = tk.Menu(self.mainMenu, tearoff=0)
         self.mainMenu.add_cascade(label = "기능", menu = self.fileMenu2)
-        self.fileMenu2.add_command(label = "예측 신호 생성", command = self.range_select,state = "disable")
+        self.fileMenu2.add_command(label = "예측 신호 생성", command = self.data_choice, state = "disable")
         
         #filename frame
         self.fileframe = tk.Frame(self.window, width=300, height = 100, relief="solid", bd=1)
         self.fileframe.pack(side="top",fill="both")
+        
+        self.file_name_frame = tk.Frame(self.fileframe, width=300, height = 85)
+        self.file_name_frame.pack(side="left",fill="both")
+        
+        self.file_tool_frame = tk.Frame(self.fileframe, width=300, height = 85)
+        self.file_tool_frame.pack(side="right",fill="both")
+
+        
         #tool_frame
         self.tool_frame = ScrolledFrame(self.window, compound=tk.RIGHT)
         self.tool_frame.pack(side="left",fill='both')
         #value_frame
         self.value_frame = ScrolledFrame(self.window, compound=tk.RIGHT)
         self.value_frame.pack(side="right",fill='both')
+        #phase select frame
+        self.phase_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         #number of range frame
         self.range_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         #choice range frame
@@ -45,7 +55,7 @@ class windowform2():
         #sample choice frame
         self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         #filename_label
-        self.filename_text = tk.StringVar(self.fileframe)
+        self.filename_text = tk.StringVar(self.file_name_frame)
         self.filename_text.set(" file = 파일을 열어주세요.")
         #value_label
         self.dc = tk.StringVar(self.value_frame);self.dc.set("0")
@@ -54,7 +64,7 @@ class windowform2():
         self.sp = tk.StringVar(self.value_frame);self.sp.set("0")
         self.fr = tk.StringVar(self.value_frame);self.fr.set("0")        
 
-        self.text_label_input(self.fileframe,self.filename_text,'left')
+        self.text_label_input(self.file_name_frame,self.filename_text,'top')
         self.window.mainloop()
 
     def open_file(self):
@@ -62,34 +72,49 @@ class windowform2():
         self.filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
                                                filetypes = (("txt files", "*.txt"), ("all files", "*.*")))
         self.filename_text.set(" file = " + str(self.filename[0]))
-        self.fileMenu2.entryconfig(0,state = "normal")
-        self.work2.loadFile(self.filename[0])
-        self.work2.slctData()
-        self.work2.initData()
-        self.work2.showData()
         
-        self.label_input(self.value_frame.interior,"< DC value >")
-        self.text_label_input(self.value_frame.interior, str(self.dc))
+        self.start_file_num = tk.StringVar(self.file_name_frame)
+        self.start_file_num.set("Data start line  = None")
+        self.text_label_input(self.file_name_frame,self.start_file_num,'top')
+        
+        self.fileMenu2.entryconfig(0,state = "normal")
+        self.work2.loadFile(self.filename[0],6)
+        
+##        self.label_input(self.value_frame.interior,"< DC value >")
+##        self.text_label_input(self.value_frame.interior, str(self.dc))
 ##        self.dc.set(self.work2.oDc)
+##
+##        self.label_input(self.value_frame.interior,"  ")
+##        self.label_input(self.value_frame.interior,"< sampling rate >")
+##        self.text_label_input(self.value_frame.interior, str(self.sr))
+##        self.sr.set(self.work2.Fs)
+##
+##        self.label_input(self.value_frame.interior,"  ")
+##        self.label_input(self.value_frame.interior,"< One point of Hz >")
+##        self.text_label_input(self.value_frame.interior, str(self.sp))
+##        self.sp.set(self.work2.Fs / self.work2.oLngth)
+##
+##        self.label_input(self.value_frame.interior,"  ")
+##        self.label_input(self.value_frame.interior,"< error >")
+##        self.text_label_input(self.value_frame.interior, str(self.er))
 
-        self.label_input(self.value_frame.interior,"  ")
-        self.label_input(self.value_frame.interior,"< sampling rate >")
-        self.text_label_input(self.value_frame.interior, str(self.sr))
-        self.sr.set(self.work2.Fs)
-
-        self.label_input(self.value_frame.interior,"  ")
-        self.label_input(self.value_frame.interior,"< One point of Hz >")
-        self.text_label_input(self.value_frame.interior, str(self.sp))
-        self.sp.set(self.work2.Fs / self.work2.oLngth)
-
-        self.label_input(self.value_frame.interior,"  ")
-        self.label_input(self.value_frame.interior,"< error >")
-        self.text_label_input(self.value_frame.interior, str(self.er))
-
-        self.combobox(self.fileframe)
+        self.start_data()
 
         self.fileMenu.entryconfig(0,state = "disable")
         
+    def start_data(self):
+        self.start_data_box = self.text_input(self.file_tool_frame," < 데이터 시작 지점 > ",5,"top","top")
+        self.button_input(self.file_tool_frame,"입력",self.slct_data,"top")
+        self.label_input(self.file_tool_frame, " ","top")
+
+    def slct_data(self):
+        self.widget_clear(self.file_tool_frame)
+        self.file_tool_frame = tk.Frame(self.fileframe, width=300, height = 85)
+        self.file_tool_frame.pack(side="right",fill="both")
+        
+        self.start_file_num.set("Data start line  = " + str(self.start_data_box.get()))
+        self.combobox(self.file_tool_frame)        
+
     def save_file(self):
         self.Y = self.work.saveSgnl()
 
@@ -131,23 +156,49 @@ class windowform2():
         button.pack(side=loc)
 
     def combobox(self, window):
-        values = [str(i) for i in range(1,5)]
+        values = ['1. 1A-Keyphasor','2. 1A-DisX','3. 1A-DisY','4. 1A-AccX','5. 1A-AccY','6. 1A-AccZ']
         self.combobox = tk.ttk.Combobox(window, height=15, values = values)
-        self.label_input(self.fileframe,"< Data Select >")
+        self.label_input(window,"< Data Select >")
         self.combobox.set("데이터를 선택 해주세요.")
         self.combobox.pack()
         self.combobox.bind("<<ComboboxSelected>>", self.callbackFunc)
         self.label_input(window,"   ")
 
-    def callbackFunc(self, event):
-        pass
+    def callbackFunc(self,event):
+        self.widget_clear(self.tool_frame)
+        self.tool_frame = ScrolledFrame(self.window, compound=tk.RIGHT)
+        self.tool_frame.pack(side="left",fill='both')
+        
+        self.num = [int(self.combobox.get().split('. ')[0]) - 1]
+        self.work2.initData()
+        self.work2.slctData(self.num)
+        self.work2.showData()
 
+    def data_choice(self):
+        if self.num[0] == 2:
+            self.phase_select()
+        else:
+            self.range_select()
+
+    def phase_select(self):
+        self.widget_clear(self.phase_frame)
+        self.phase_frame=tk.Frame(self.tool_frame.interior, width=300, height = 150)
+        self.phase_frame.pack(side="top",expand = True)
+        self.phase_text_box = self.text_input(self.phase_frame,"  ● 페이즈 값 입력(degree값)",10,"top","top")
+        self.ph_buttonframe=tk.Frame(self.phase_frame, width=300, height = 350)
+        self.ph_buttonframe.pack(side="bottom")        
+        self.button_input(self.ph_buttonframe,"입   력",self.range_select,"left")        
+        
+    
     def range_select(self):
         self.widget_clear(self.nb_range_frame)
         self.widget_clear(self.range_frame)
         self.widget_clear(self.hzrangeSlctframe)
         self.widget_clear(self.hz_range_frame)
         self.widget_clear(self.samplechoiceframe)
+
+        if self.num[0] == 2:
+            self.work2.slctPhs(float(self.phase_text_box.get()))
         
         self.count = 0
         self.range_frame=tk.Frame(self.tool_frame.interior, width=300, height = 150)
