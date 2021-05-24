@@ -1,16 +1,16 @@
 import tkinter as tk
 from tkinter import filedialog
 from ttkwidgets.frames import ScrolledFrame
-from back2 import FuckMePlz
+from back2 import fuckMe
 
 class windowform2():
 
     def __init__(self):
-        self.work2 = FuckMePlz()
+        self.work2 = fuckMe()
 
         self.window = tk.Tk()
         self.window.title('control')
-        self.window.geometry("500x900+50+50")
+        self.window.geometry("560x900+50+50")
         self.window.resizable(True,True)
         self.mainMenu = tk.Menu(self.window)
 
@@ -70,7 +70,7 @@ class windowform2():
         
         self.label_input(self.value_frame.interior,"< DC value >")
         self.text_label_input(self.value_frame.interior, str(self.dc))
-        self.dc.set(self.work2.oDc)
+##        self.dc.set(self.work2.oDc)
 
         self.label_input(self.value_frame.interior,"  ")
         self.label_input(self.value_frame.interior,"< sampling rate >")
