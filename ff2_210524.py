@@ -19,6 +19,7 @@ class back:
   oMean = 0
   oAmp  = 0
   oPhs  = 0
+  oData = 0
 
   Fr  = 0
   Fs  = 0
@@ -120,7 +121,7 @@ class back:
 
 
     
-  def scltData(self, _num = [0]):
+  def slctData(self, _num = [0]):
   #변수 블럭
     num = _num[0]
 
