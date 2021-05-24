@@ -19,7 +19,7 @@ class back:
   oMean = 0
   oAmp  = 0
   oPhs  = 0
-  oTitle = 0
+  oData = 0
 
   Fr  = 0
   Fs  = 0
@@ -36,8 +36,6 @@ class back:
   intrvlData  = 0
   intrvlDataMean  = 0
 
-  maxFft = 0
-
     
 
   def __init__(self):
@@ -46,40 +44,13 @@ class back:
 
   def loadFile(self,  \
                _path = '',  \
-               _skipRows = 1, \
+               _skipRows = 0, \
                _maxRows = 2500):
     print('데이터 불러오는 중..')
-  #변수 블럭
-    resTitle  = []    
-    tmpFile   = []
-    resFile = np.loadtxt(_path,  \
-                         skiprows = _skipRows,  \
-                         max_rows = _maxRows).T
-    cntData = resFile.shape[0]
-
-  #작업 블럭
-    tmpFile = np.loadtxt(_path,  \
-                        skiprows = 1,  \
-                        max_rows = 1, \
-                        dtype = np.str_  ).T
-
-    for i in range(cntData):
-      resTitle.append(tmpFile[i])
+    self.oFile = np.loadtxt(_path,  \
+                            skiprows = _skipRows,  \
+                            max_rows = _maxRows).T
     print('데이터 불러오기 완료')
-
-  #결과 블럭
-    self.oFile = resFile
-    self.oTitle = resTitle
-
-    self.initData()
-
-
-
-
-
-
-
-
 
 
   def initData(self, maxLngth = 144000):
@@ -201,23 +172,17 @@ class back:
   def showData(self, original = False):
 
   #변수블럭
+    self.fig1 = plt.figure('원 데이터와 선택된 구간')
     end       = self.lngth
     x         = np.linspace(0, end, end, endpoint = False)
     y         = self.data + self.mean
-    pltLgn    = [self.oTitle[self.slctNum] + 'avg : ' + str(
-                                                            round( self.oMean[self.slctNum], 6)
-                                                            )]
-   
-  #결과 블럭
-    self.fig1 = plt.figure('원 데이터와 선택된 구간')
+
+  #작업 블럭
     p = self.fig1.add_subplot(1, 1, 1)
-    plt.cla()
-    p.set_title(self.oTitle[self.slctNum])
-    p.set_xlabel('Number of samples')
-    p.set_ylabel('x(n)')
-    plt.legend(pltLgn)
     p.plot(x,y)
     plt.grid(True)
+    
+  #결과 블럭
     self.fig1.tight_layout()
     self.fig1.show()
 
@@ -246,10 +211,8 @@ class back:
 
   def slctIntrvl(self, _intrvl = [0,1], _scale = [1]):
   #변수 블럭
+    self.fig1 = plt.figure('원 데이터와 선택된 구간')
     cntIntrvl = len(_intrvl) // 2
-    pltLgn  = [self.oTitle[self.slctNum] + 'avg : ' + str(
-                                                            round( self.oMean[self.slctNum], 6)
-                                                            )]
     y = []
     x = []
     m = []
@@ -272,19 +235,13 @@ class back:
     self.intrvlData = np.array(y)
     self.intrvlMean = np.array(m)
 
-    self.fig1 = plt.figure('원 데이터와 선택된 구간')
     p = self.fig1.add_subplot(1, 1, 1)
     plt.cla()
-    p.set_title(self.oTitle[self.slctNum])
-    p.set_xlabel('Number of samples')
-    p.set_ylabel('x(n)')
     plt.plot(self.data + self.mean)
     for i in range(cntIntrvl):
       p.plot(x[i], y[i] + self.mean)
-      pltLgn.append('Section' + chr(65+i))
       plt.grid(True)
 
-    plt.legend(pltLgn)
     self.fig1.tight_layout()
     self.fig1.show()
 
@@ -311,11 +268,10 @@ class back:
 
   def clcFft(self):
   #변수 블럭
+    self.fig2 = plt.figure('선택된 구간의 FFT')
     cntIntrvl = len(self.intrvl) // 2
-    pltTtl = []
     resAmp = []
     resPhs = []
-    resMax = []
 
 
     for i in range(cntIntrvl):
@@ -330,8 +286,7 @@ class back:
       tmpFFT  = fft(useData) / (half*2)
       tmpAmp  = 2*abs(tmpFFT)[:half]
       tmpPhs  = np.angle(tmpFFT, deg = False)[:half]
-      
-      resMax.append((end-srt)//2)
+
       resAmp.append(tmpAmp)
       resPhs.append(tmpPhs)
 
@@ -340,24 +295,16 @@ class back:
     self.phsLst = np.array(resPhs)
     self.copyAmp  = np.copy(self.ampLst)
     self.copyPhs  = np.copy(self.phsLst)
-    self.maxFft   = resMax
 
-    self.fig2 = plt.figure('선택된 구간의 FFT')
+
     for i in range(cntIntrvl):
       p = self.fig2.add_subplot(2, cntIntrvl, 1 + i)
       plt.cla()
-      p.set_title('Section' + chr(65+i))
-      p.set_xlabel('Hz')
-      if i == 0:
-        p.set_ylabel('x(t)')
       p.plot(self.intrvlData[i] + self.mean)
       plt.grid(True)
 
       p = self.fig2.add_subplot(2, cntIntrvl, 1 + i + cntIntrvl)
       plt.cla()
-      p.set_xlabel('Hz')
-      if i == 0:
-        p.set_ylabel('|∠X(n)|')
       p.stem(self.ampLst[i], markerfmt = 'none')
       plt.grid(True)
 
@@ -388,6 +335,7 @@ class back:
 
   def slctFft(self, _intrvl = [0,1], _scale = [1]):
   #변수 블럭
+    self.fig2 = plt.figure('선택된 구간의 FFT')
     cntIntrvl = len(self.intrvl) // 2
     x, x1 = [], []
     y, y1 = [], []
@@ -405,16 +353,12 @@ class back:
   #결과 블럭
     self.ampLst[i][srt:end] = res
 
-    self.fig2 = plt.figure('선택된 구간의 FFT')
-    
+        
     for i in range(cntIntrvl):
       cntFFT = len(_intrvl[i]) // 2
       for j in range(cntFFT):
         p = self.fig2.add_subplot(2, cntIntrvl, 1 + i + cntIntrvl)
         plt.cla()
-        if i == 0:
-          p.set_ylabel('|∠X(n)|')
-        p.set_xlabel('Hz')
         p.stem(self.ampLst[i], markerfmt = 'none')
         plt.grid(True)
 
@@ -426,9 +370,6 @@ class back:
         num = end - srt
         x   = np.linspace(srt, end, num, endpoint = False)
         p = self.fig2.add_subplot(2, cntIntrvl, 1 + i + cntIntrvl)
-        if i == 0:
-          p.set_ylabel('|∠X(n)|')
-        p.set_xlabel('Hz')
         p.stem(x,self.ampLst[i][srt:end], linefmt = 'orange', markerfmt = 'none')
         plt.grid(True)
 
@@ -518,7 +459,6 @@ class back:
   #결과 블럭
     resY  = tmp.sum(axis = 0) + self.mean
     self.data   = resY
-    self.copyData = np.copy(self.data)
 
     p = self.fig1.add_subplot(1, 1, 1)
     plt.cla()
@@ -552,9 +492,9 @@ class back:
   def genSgnl(self, _cntGenSmpl, _inptDC = 0):
     print('신호 생성중..')
   #변수 블럭
+    self.fig3 = plt.figure('생성한 신호')
     resY = []
     cntIntrvl = len(self.intrvl)//2
-    pltLgn = ['Generated + inputDC : ' + str(_inptDC)]
 
     for i in range(cntIntrvl):
       lngth = len(self.ampLst[i])
@@ -619,17 +559,11 @@ class back:
 
   #결과 블럭
     resY  = tmp.sum(axis = 0) + _inptDC
-    
 
     self.Y  = resY
 
-    self.fig3 = plt.figure('생성한 신호')
     p = self.fig3.add_subplot(1, 1, 1)
-    plt.cla()
-    p.set_xlabel('Number of samples')
-    p.set_ylabel('x(n)')
     p.plot(self.Y)
-    plt.legend(pltLgn)
     plt.grid(True)
     self.fig3.tight_layout()
     self.fig3.show()
@@ -724,11 +658,6 @@ class back:
     for i in range(cntData):
       self.fig4 = plt.figure('최종 결과')
       p = self.fig4.add_subplot(cntData,1,1+i)
-      plt.cla()
-      p.set_title(self.oTitle[i])
-      p.set_ylabel('x(t)')
-      if i == cntData-1:
-        p.set_xlabel('Generated samples')
       p.plot(resY[i])
       plt.grid(True)
 
@@ -747,15 +676,6 @@ class back:
 
 
 
-  def saveFile(self, _path):
-    pass
-
-
-
-
-
-
-
 
 
 
@@ -765,15 +685,16 @@ class back:
 if __name__ == '__main__':
   size = 2500
   back = back()
-  back.loadFile('data2.txt', 2, size)
-  back.slctData([2])
+  back.loadFile('data.txt', 0, size)
+  back.initData()
+  back.scltData([2])
   back.showData()
 
 ##  back.slctIntrvl([0,size], [1])
 ##  back.slctFft([[0,size//2]], [[1]])
 ##  back.genSgnl(size, 10)
 
-  back.slctPhs(90)
+  back.slctPhs(0)
   back.slctIntrvl([0,100,2000,2200], [1, 1])
   back.slctFft([[0,10], [0,40]], [[1],[1]])
   back.genSgnl(size, 10)
