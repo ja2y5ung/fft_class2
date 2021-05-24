@@ -253,7 +253,7 @@ class windowform2():
         for e_box in self.list3:
             exp_list.append(float(e_box.get()))
             
-        self.work2.getIntrvl(start_end_list,exp_list)
+        self.work2.slctIntrvl(start_end_list,exp_list)
         
         self.hzrangeSlctframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         self.hzrangeSlctframe.pack(side="top",fill = 'x')
@@ -289,8 +289,8 @@ class windowform2():
                 self.chrcount+=1
                 
             self.label_input(self.hz_range_frame,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
-            for i in range(len(self.work2.maxLst)):
-                self.label_input(self.hz_range_frame,"○ 0~" + str(self.work2.maxLst[i]) +" 사이로 입력해주세요.","top")
+            for i in range(len(self.work2.maxFft)):
+                self.label_input(self.hz_range_frame,"○ 0~" + str(self.work2.maxFft[i]) +" 사이로 입력해주세요.","top")
 
             self.nrf_buttonframe=tk.Frame(self.hz_range_frame, width=300, height = 350)
             self.nrf_buttonframe.pack(side="bottom")  
@@ -303,6 +303,18 @@ class windowform2():
 
 
     def sample_choice(self):
+        self.widget_clear(self.samplechoiceframe)        
+        start_end_list2,exp_list2 = [], []
+        for st_en_box2 in self.hzlist1:
+            a = list(map(int, st_en_box2.get().split(',')))
+
+            start_end_list2.append(a)
+        for e_box in self.hzlist3:
+            ex_list = [float(e_box.get())]
+            exp_list2.append(ex_list)
+
+
+        self.work2.slctFft(start_end_list2,exp_list2)        
         self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         self.samplechoiceframe.pack(side="top",fill = 'x')
         self.sample_text_box = self.text_input(self.samplechoiceframe,"  ● 샘플 갯수 입력  ",10,"top","top")
@@ -312,20 +324,11 @@ class windowform2():
         self.errorGraframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
 
     def confirm(self):
-        self.widget_clear(self.errorGraframe)        
-        start_end_list2,exp_list2 = [], []
-        for st_en_box2 in self.hzlist1:
-            a = list(map(int, st_en_box2.get().split(',')))
-            for i in a:
-                start_end_list2.append(i)
-        for e_box in self.hzlist3:
-            exp_list2.append(float(e_box.get()))
-            
-        self.work2.getFft(start_end_list2,exp_list2)
-        self.er.set(self.work2.e)
-        self.errorGraframe = tk.Frame(self.samplebuttonframe, width=300, height = 350)
-        self.errorGraframe.pack(side="bottom")
-        self.button_input(self.errorGraframe,"에러 그래프",self.error_show,"left")
+        pass
+##        self.er.set(self.work2.e)
+##        self.errorGraframe = tk.Frame(self.samplebuttonframe, width=300, height = 350)
+##        self.errorGraframe.pack(side="bottom")
+##        self.button_input(self.errorGraframe,"에러 그래프",self.error_show,"left")
 
     def error_show(self):
         self.work2.showError()
