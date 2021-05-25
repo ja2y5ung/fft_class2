@@ -537,7 +537,6 @@ class back:
   #결과 블럭
     
     self.data   = resY
-    self.inptDC =_inptDC
     self.copyData = np.copy(self.data)
 
     p = self.fig1.add_subplot(1, 1, 1)
@@ -780,7 +779,6 @@ class back:
     if self.lngth > len(self.Y):
       for i in range(cntIntrvl):
         lngth = len(self.ampLst[i])
-        lngth = self.lngth // 2
         amp   = self.ampLst[i]
         phs   = self.phsLst[i]
 
