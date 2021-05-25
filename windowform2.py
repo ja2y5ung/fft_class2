@@ -80,10 +80,7 @@ class windowform2():
         self.start_file_num = tk.StringVar(self.file_name_frame)
         self.start_file_num.set("Data start line  = None")
         self.text_label_input(self.file_name_frame,self.start_file_num,'top')
-        
-        self.fileMenu2.entryconfig(0,state = "normal")
 
-        
         self.label_input(self.value_frame.interior,"< DC value >")
         self.text_label_input(self.value_frame.interior, str(self.dc))
 
@@ -121,13 +118,11 @@ class windowform2():
         self.combobox(self.file_tool_frame)        
 
     def save_file(self):
-        self.Y = self.work.saveSgnl()
-
-        self.YFrame = pd.DataFrame(self.Y, columns = ['genSgnl'])
         self.filename2 = filedialog.asksaveasfilename(initialdir = "E:/Images", title = "경로 선택",
                                                filetypes = (("csv files", "*.csv"), ("all files", "*.*")))
-        self.YFrame.to_csv(str(self.filename2),index=False)
-
+        
+        self.work2.saveFile(self.filename2)
+        
     def exit_file(self):
         self.window.quit()
         self.window.destroy()
@@ -171,6 +166,7 @@ class windowform2():
 
     def callbackFunc(self,event):
         self.widget_clear(self.tool_frame)
+        self.fileMenu2.entryconfig(0,state = "normal")
         self.tool_frame = ScrolledFrame(self.window, compound=tk.RIGHT)
         self.tool_frame.pack(side="left",fill='both')
         
@@ -344,6 +340,7 @@ class windowform2():
     def error_show(self):
         self.work2.error()
         self.er.set(self.work2.e)
+        self.fileMenu.entryconfig(1,state = "normal")
 
         
 window2 = windowform2()
