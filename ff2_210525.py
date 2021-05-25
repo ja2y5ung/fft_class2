@@ -1,5 +1,4 @@
-#예외처리, 에러 계
-
+#210525
 import numpy as np
 from numpy import pi, sin, zeros, array
 from numpy.fft import fft
@@ -47,7 +46,7 @@ class back:
     
 
   def __init__(self):
-      pass
+      print('210525')
 
 
   def loadFile(self,  \
@@ -211,9 +210,7 @@ class back:
     end       = self.lngth
     x         = np.linspace(0, end, end, endpoint = False)
     y         = self.data + self.mean
-    pltLgn    = [self.oTitle[self.slctNum] + 'avg : ' + str(
-                                                            round( self.oMean[self.slctNum], 6)
-                                                            )]
+    pltLgn    = [self.oTitle[self.slctNum] + 'avg : ' + str(round( self.oMean[self.slctNum], 6))]
    
   #결과 블럭
     self.fig1 = plt.figure('원 데이터와 선택된 구간')
@@ -268,9 +265,9 @@ class back:
       
         
   #작업 블럭
-      if num <= 0:
-        print('slctIntrvl : 범위 값을 잘 못 입력했거나 초과함')
-        self.errMsg = '입력 범위를 확인해주세요'
+      if num <= 0 or type(num) != int or srt < 0 or end < 0:
+        print('slctIntrvl : 정수 범위 값을 잘 못 입력했거나 초과함')
+        self.errMsg = '정수 입력 범위를 확인해주세요'
         return
       else:
         self.errMsg = ''
@@ -374,6 +371,8 @@ class back:
       if i == 0:
         p.set_ylabel('|∠X(n)|')
       p.stem(self.ampLst[i], markerfmt = 'none')
+      l = 1 / len(self.intrvlData[i])
+      plt.legend(['1Hz = ' + str(round(l, 8))], loc = 'upper right')
       plt.grid(True)
 
     self.fig2.tight_layout()
@@ -401,7 +400,8 @@ class back:
 
       
 
-  def slctFft(self, _intrvl = [0,1], _scale = [1]):
+  def slctFft(self, _intrvl = [[0,10,30,40]], _scale = [[1,2]]):
+    self.clcFft()
   #변수 블럭
     cntIntrvl = len(self.intrvl) // 2
     x, x1 = [], []
@@ -410,17 +410,23 @@ class back:
     for i in range(cntIntrvl):
       cntFFT = len(_intrvl[i]) // 2
       for j in range(cntFFT):
-        srt = _intrvl[i][j]
-        end = _intrvl[i][j+1]
+        srt = _intrvl[i][2*j]
+        end = _intrvl[i][2*j+1]
         num = end - srt
+
         
   #작업 블럭
-        if num <= 0:
-          print('slctFft : 입력 범위 값을 잘 못 입력했거나 초과함')
-          self.errMsg = '입력 범위를 확인해주세요'
+        if num <= 0 or type(num) != int or srt < 0 or end < 0 :
+          print('slctFft : 정수 입력 범위 값을 잘 못 입력했거나 초과함')
+          self.errMsg = '정수 입력 범위를 확인해주세요'
+          return
         else:
           self.errMsg = ''
+  
         res = self.copyAmp[i][srt:end]*_scale[i][j]
+
+
+        
 
   #결과 블럭
     self.ampLst[i][srt:end] = res
@@ -441,15 +447,17 @@ class back:
     for i in range(cntIntrvl):
       cntFFT = len(_intrvl[i]) // 2
       for j in range(cntFFT):
-        srt = _intrvl[i][j]
-        end = _intrvl[i][j+1]
+        srt = _intrvl[i][2*j]
+        end = _intrvl[i][2*j+1]
         num = end - srt
         x   = np.linspace(srt, end, num, endpoint = False)
         p = self.fig2.add_subplot(2, cntIntrvl, 1 + i + cntIntrvl)
         if i == 0:
           p.set_ylabel('|∠X(n)|')
         p.set_xlabel('Hz')
+        l = 1 / len(self.intrvlData[i])
         p.stem(x,self.ampLst[i][srt:end], linefmt = 'orange', markerfmt = 'none')
+        plt.legend(['1Hz = ' + str(round(l, 8))], loc = 'upper right')
         plt.grid(True)
 
     self.fig2.tight_layout()
@@ -538,10 +546,12 @@ class back:
     
     self.data   = resY
     self.copyData = np.copy(self.data)
-
+    
+    pltLgn    = [self.oTitle[self.slctNum] + 'avg : ' + str(round( self.oMean[self.slctNum], 6))]
     p = self.fig1.add_subplot(1, 1, 1)
     plt.cla()
     p.plot(t,resY)
+    plt.legend(pltLgn, loc = 'lower left')
     plt.grid(True)
     self.fig1.tight_layout()
     self.fig1.show()
@@ -804,6 +814,7 @@ class back:
             for jj in range(hCnt+1):
               # 가로 계산
               if jj != hCnt:
+                breakpoint()
                 A   = amp.reshape(lngth, 1)[ii*vrt:ii*vrt+vrt]
                 W   = 2*pi*f*n[ii*vrt:ii*vrt+vrt]
                 P   = phs.reshape(lngth, 1)[ii*vrt:ii*vrt+vrt] + (pi/2)
@@ -849,6 +860,7 @@ class back:
     self.fig5 = plt.figure('에러 그래프')
     pltLgn = ['Original', 'Gerated']
     p = self.fig5.add_subplot(1, 1, 1)
+    p.cla()
     p.plot(self.oData[self.slctNum])
     p.plot(resY)
     plt.grid(True)
@@ -889,15 +901,16 @@ if __name__ == '__main__':
   back.slctData([2])
   back.showData()
 
-  back.slctIntrvl([0,size], [1])
-  back.slctFft([[0,size//2]], [[1]])
-  back.genSgnl(6000, 0.000443)
-  back.error()
+  #back.slctIntrvl([0,size], [1])
+  #back.slctFft([[0,size//2]], [[1]])
+  #back.genSgnl(6000, 0.000443)
+  #back.error()
 
-  #back.slctPhs(90)
-  #back.slctIntrvl([0,100,2000,2200], [1, 1])
-  #back.slctFft([[0,10], [0,40]], [[1],[1]])
-  #back.genSgnl(size, 10)
+  back.slctPhs(90)
+  back.slctIntrvl([0,1000], [1])
+  back.slctFft([[0,10,30,40]], [[1,2]])
+  back.genSgnl(1000, 10)
+  back.error()
 
 
   
