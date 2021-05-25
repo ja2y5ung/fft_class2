@@ -10,7 +10,7 @@ class windowform2():
 
         self.window = tk.Tk()
         self.window.title('control')
-        self.window.geometry("560x900+50+50")
+        self.window.geometry("450x900+50+50")
         self.window.resizable(True,True)
         self.mainMenu = tk.Menu(self.window)
 
@@ -78,7 +78,7 @@ class windowform2():
         self.filename_text.set(" file = " + str(self.filename[0]))
         
         self.start_file_num = tk.StringVar(self.file_name_frame)
-        self.start_file_num.set("Data start line  = None")
+        self.start_file_num.set("Skip Header Line : None")
         self.text_label_input(self.file_name_frame,self.start_file_num,'top')
 
         self.label_input(self.value_frame.interior,"< DC value >")
@@ -104,7 +104,7 @@ class windowform2():
         self.fileMenu.entryconfig(0,state = "disable")
         
     def start_data(self):
-        self.start_data_box = self.text_input(self.file_tool_frame," < 데이터 시작 지점 > ",5,"top","top")
+        self.start_data_box = self.text_input(self.file_tool_frame," < skip header(정수 입력) > ",5,"top","top")
         self.button_input(self.file_tool_frame,"입력",self.slct_data,"top")
         self.label_input(self.file_tool_frame, " ","top")
 
@@ -113,7 +113,7 @@ class windowform2():
         self.file_tool_frame = tk.Frame(self.fileframe, width=300, height = 85)
         self.file_tool_frame.pack(side="right",fill="both")
         
-        self.start_file_num.set("Data start line  = " + str(self.start_data_box.get()))
+        self.start_file_num.set("Skip Header Line : " + str(self.start_data_box.get()))
         self.work2.loadFile(self.filename[0],int(self.start_data_box.get()))
         self.combobox(self.file_tool_frame)        
 
@@ -308,15 +308,29 @@ class windowform2():
     def sample_choice(self):
         self.widget_clear(self.samplechoiceframe)
         self.widget_clear(self.errorGraframe) 
-        start_end_list2,exp_list2 = [], []
+        start_end_list2,exp_list2,count_list,count_list2 = [], [], [], []
+        count,count2 = 0, 0 
         for st_en_box2 in self.hzlist1:
+            if count == int(self.hz_range_text_box.get()):
+                start_end_list2.append(count_list)
+                count_list = []
+                count = 0
             a = list(map(int, st_en_box2.get().split(',')))
+            for j in a:
+                count_list.append(j)
+            count += 1
+        start_end_list2.append(count_list)
+        print(start_end_list2)
 
-            start_end_list2.append(a)
         for e_box in self.hzlist3:
-            ex_list = [float(e_box.get())]
-            exp_list2.append(ex_list)
-
+            if count2 == int(self.hz_range_text_box.get()):
+                exp_list2.append(count_list2)
+                count_list2 = []
+                count2 = 0
+            count_list2.append(float(e_box.get()))
+            count2 += 1
+        exp_list2.append(count_list2)
+        print(exp_list2)
 
         self.work2.slctFft(start_end_list2,exp_list2)        
         self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
