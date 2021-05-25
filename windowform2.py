@@ -54,6 +54,8 @@ class windowform2():
         self.hz_range_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         #sample choice frame
         self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
+        #error graph frame
+        self.errorGraframe = tk.Frame(self.tool_frame.interior, width=300, height = 350)
         #filename_label
         self.filename_text = tk.StringVar(self.file_name_frame)
         self.filename_text.set(" file = 파일을 열어주세요.")
@@ -62,7 +64,9 @@ class windowform2():
         self.sr = tk.StringVar(self.value_frame);self.sr.set("0")
         self.er = tk.StringVar(self.value_frame);self.er.set("None")
         self.sp = tk.StringVar(self.value_frame);self.sp.set("0")
-        self.fr = tk.StringVar(self.value_frame);self.fr.set("0")        
+        self.fr = tk.StringVar(self.value_frame);self.fr.set("0")
+        self.ipdc = tk.StringVar(self.value_frame);self.ipdc.set("0")
+        
 
         self.text_label_input(self.file_name_frame,self.filename_text,'top')
         self.window.mainloop()
@@ -78,28 +82,28 @@ class windowform2():
         self.text_label_input(self.file_name_frame,self.start_file_num,'top')
         
         self.fileMenu2.entryconfig(0,state = "normal")
-        self.work2.loadFile(self.filename[0],6)
+
         
-##        self.label_input(self.value_frame.interior,"< DC value >")
-##        self.text_label_input(self.value_frame.interior, str(self.dc))
-##        self.dc.set(self.work2.oDc)
-##
-##        self.label_input(self.value_frame.interior,"  ")
-##        self.label_input(self.value_frame.interior,"< sampling rate >")
-##        self.text_label_input(self.value_frame.interior, str(self.sr))
-##        self.sr.set(self.work2.Fs)
-##
-##        self.label_input(self.value_frame.interior,"  ")
-##        self.label_input(self.value_frame.interior,"< One point of Hz >")
-##        self.text_label_input(self.value_frame.interior, str(self.sp))
-##        self.sp.set(self.work2.Fs / self.work2.oLngth)
-##
-##        self.label_input(self.value_frame.interior,"  ")
-##        self.label_input(self.value_frame.interior,"< error >")
-##        self.text_label_input(self.value_frame.interior, str(self.er))
+        self.label_input(self.value_frame.interior,"< DC value >")
+        self.text_label_input(self.value_frame.interior, str(self.dc))
+
+        self.label_input(self.value_frame.interior,"  ")
+        self.label_input(self.value_frame.interior,"< sampling rate >")
+        self.text_label_input(self.value_frame.interior, str(self.sr))
+
+        self.label_input(self.value_frame.interior,"  ")
+        self.label_input(self.value_frame.interior,"< One point of Hz >")
+        self.text_label_input(self.value_frame.interior, str(self.sp))
+
+        self.label_input(self.value_frame.interior,"  ")
+        self.label_input(self.value_frame.interior,"< Input DC Value >")
+        self.text_label_input(self.value_frame.interior, str(self.ipdc))
+
+        self.label_input(self.value_frame.interior,"  ")
+        self.label_input(self.value_frame.interior,"< error >")
+        self.text_label_input(self.value_frame.interior, str(self.er))
 
         self.start_data()
-
         self.fileMenu.entryconfig(0,state = "disable")
         
     def start_data(self):
@@ -113,6 +117,7 @@ class windowform2():
         self.file_tool_frame.pack(side="right",fill="both")
         
         self.start_file_num.set("Data start line  = " + str(self.start_data_box.get()))
+        self.work2.loadFile(self.filename[0],int(self.start_data_box.get()))
         self.combobox(self.file_tool_frame)        
 
     def save_file(self):
@@ -170,8 +175,10 @@ class windowform2():
         self.tool_frame.pack(side="left",fill='both')
         
         self.num = [int(self.combobox.get().split('. ')[0]) - 1]
-        self.work2.initData()
         self.work2.slctData(self.num)
+        self.dc.set(self.work2.mean)
+        self.sr.set(self.work2.Fs)
+        self.sp.set(self.work2.Fr)
         self.work2.showData()
 
     def data_choice(self):
@@ -303,7 +310,8 @@ class windowform2():
 
 
     def sample_choice(self):
-        self.widget_clear(self.samplechoiceframe)        
+        self.widget_clear(self.samplechoiceframe)
+        self.widget_clear(self.errorGraframe) 
         start_end_list2,exp_list2 = [], []
         for st_en_box2 in self.hzlist1:
             a = list(map(int, st_en_box2.get().split(',')))
@@ -318,20 +326,25 @@ class windowform2():
         self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         self.samplechoiceframe.pack(side="top",fill = 'x')
         self.sample_text_box = self.text_input(self.samplechoiceframe,"  ● 샘플 갯수 입력  ",10,"top","top")
+        self.ipdc_text_box = self.text_input(self.samplechoiceframe,"  ● Input DC 값 입력  ",10,"top","top")
+        
         self.samplebuttonframe = tk.Frame(self.samplechoiceframe, width=300, height = 350)
         self.samplebuttonframe.pack(side="bottom")        
         self.button_input(self.samplebuttonframe,"입   력",self.confirm,"left")
         self.errorGraframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
 
     def confirm(self):
-        pass
-##        self.er.set(self.work2.e)
-##        self.errorGraframe = tk.Frame(self.samplebuttonframe, width=300, height = 350)
-##        self.errorGraframe.pack(side="bottom")
-##        self.button_input(self.errorGraframe,"에러 그래프",self.error_show,"left")
+        self.widget_clear(self.errorGraframe)   
+        self.work2.genSgnl(int(self.sample_text_box.get()),float(self.ipdc_text_box.get()))
+        self.ipdc.set(float(self.ipdc_text_box.get()))
+        self.errorGraframe = tk.Frame(self.samplebuttonframe, width=300, height = 350)
+        self.errorGraframe.pack(side="bottom")
+        self.button_input(self.errorGraframe,"에러 그래프",self.error_show,"left")        
 
     def error_show(self):
-        self.work2.showError()
+        self.work2.error()
+        self.er.set(self.work2.e)
+
         
 window2 = windowform2()
 
