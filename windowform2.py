@@ -58,7 +58,7 @@ class windowform2():
         self.errorGraframe = tk.Frame(self.tool_frame.interior, width=300, height = 350)
         #filename_label
         self.filename_text = tk.StringVar(self.file_name_frame)
-        self.filename_text.set(" file = 파일을 열어주세요.")
+        self.filename_text.set(" - file : 파일을 열어주세요.")
         #value_label
         self.dc = tk.StringVar(self.value_frame);self.dc.set("0")
         self.sr = tk.StringVar(self.value_frame);self.sr.set("0")
@@ -68,18 +68,18 @@ class windowform2():
         self.ipdc = tk.StringVar(self.value_frame);self.ipdc.set("0")
         
 
-        self.text_label_input(self.file_name_frame,self.filename_text,'top')
+        self.text_label_input(self.file_name_frame, self.filename_text,'top')
         self.window.mainloop()
 
     def open_file(self):
         
         self.filename = filedialog.askopenfilenames(initialdir = "E:/Images", title = "파일선택",
                                                filetypes = (("txt files", "*.txt"), ("all files", "*.*")))
-        self.filename_text.set(" file = " + str(self.filename[0]))
+        self.filename_text.set(" - file : " + str(self.filename[0]))
         
         self.start_file_num = tk.StringVar(self.file_name_frame)
-        self.start_file_num.set("Skip Header Line : None")
-        self.text_label_input(self.file_name_frame,self.start_file_num,'top')
+        self.start_file_num.set(" - Skip Header Line : None")
+        self.text_label_input(self.file_name_frame,self.start_file_num,'top','nw')
 
         self.label_input(self.value_frame.interior,"< DC value >")
         self.text_label_input(self.value_frame.interior, str(self.dc))
@@ -113,7 +113,7 @@ class windowform2():
         self.file_tool_frame = tk.Frame(self.fileframe, width=300, height = 85)
         self.file_tool_frame.pack(side="right",fill="both")
         
-        self.start_file_num.set("Skip Header Line : " + str(self.start_data_box.get()))
+        self.start_file_num.set(" - Skip Header Line : " + str(self.start_data_box.get()))
         self.work2.loadFile(self.filename[0],int(self.start_data_box.get()))
         self.combobox(self.file_tool_frame)        
 
@@ -130,9 +130,9 @@ class windowform2():
     def widget_clear(self, widget):
         widget.pack_forget()
 
-    def text_label_input(self,window,text,loc = 'top'):
+    def text_label_input(self,window,text,loc = 'top',loc2 = 'center'):
         label = tk.Label(window, textvariable = text)
-        label.pack(side = loc)
+        label.pack(side = loc, anchor = loc2)
 
     def label_input(self,window,string,loc = "top"):
         label = tk.Label(window, text = string)
