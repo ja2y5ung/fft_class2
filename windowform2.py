@@ -10,7 +10,7 @@ class windowform2():
 
         self.window = tk.Tk()
         self.window.title('control')
-        self.window.geometry("450x900+50+50")
+        self.window.geometry("500x900+50+50")
         self.window.resizable(True,True)
         self.mainMenu = tk.Menu(self.window)
 
