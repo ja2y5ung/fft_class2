@@ -8,8 +8,8 @@ import warnings
 warnings.filterwarnings(action='ignore')
 
 Frequency   = 12800
-VRT         = 1000
-HRZ         = 900
+VRT         = 6000
+HRZ         = 2000
 
 
 class back:
@@ -58,8 +58,7 @@ class back:
     resTitle  = []    
     tmpFile   = []
     resFile = np.loadtxt(_path,  \
-                         skiprows = _skipRows,  \
-                         max_rows = _maxRows).T
+                         skiprows = _skipRows, max_rows = 2599).T
     cntData = resFile.shape[0]
     tmpFile = np.loadtxt(_path,  \
                         skiprows = 1,  \
@@ -108,7 +107,7 @@ class back:
 
       tmpFFT    = fft(resData - resMean.reshape(cntData, 1)) / maxLngth
       resAmp    = 2*abs(tmpFFT)[:,:maxLngth//2]
-      resPhs    = np.angle(tmpFFT, deg = False)[:,:maxLngth]
+      resPhs    = np.angle(tmpFFT, deg = False)[:,:maxLngth//2]
 
     else:
       resData   = zeros((cntData, lngthData))
@@ -130,7 +129,6 @@ class back:
     self.oPhs   = resPhs
     self.Fs     = Frequency
     self.Fr     = 1/self.oLngth
-
 
 
 
@@ -479,6 +477,12 @@ class back:
 
 
 
+
+
+
+
+
+
   def slctPhs(self, _inptPhs = 0):
   #변수 블럭
     self.fig1 = plt.figure('원 데이터와 선택된 구간')
@@ -500,8 +504,10 @@ class back:
     tmp   = np.zeros((vrt, self.lngth))
     
   #작업 블럭
+    print('페이즈로 신호 재생성 중..')
     #가로 크기
     for ii in range(vCnt+1):
+      print('페이즈로 신호 재생성 중...' + str(round(ii/(vCnt+1)*100,1)) + '%')
       # 세로 계산
       if ii != vCnt:
 
@@ -605,7 +611,7 @@ class back:
   #작업 블럭
       #가로 크기
       for ii in range(vCnt+1):
-        print('신호 생성중...' + str(round(ii/(vCnt+1)*100,1)) + '%')
+        print('신호 생성 중...' + str(round(ii/(vCnt+1)*100,1)) + '%')
         # 세로 계산
         if ii != vCnt:
 
@@ -681,7 +687,7 @@ class back:
 
 
   def genSgnlRst(self, _cntGenSmpl = 0):
-    print('나머지 신호 생성중')
+    print('나머지 신호 생성 중')
   #변수 블럭
     lngth = self.lngth // 2
     cntData = self.oFile.shape[0]
@@ -705,7 +711,7 @@ class back:
   #작업 블럭
     #가로 크기
     for ii in range(vCnt+1):
-      print('나머지 신호 생성중..' + str(round(ii/(vCnt+1)*100,2)) + '%')
+      print('나머지 신호 생성 중..' + str(round(ii/(vCnt+1)*100,2)) + '%')
       # 세로 계산
       if ii != vCnt:
 
@@ -783,7 +789,7 @@ class back:
 
   def error(self):
   #변수 블럭
-    print('에러 계산중..')
+    print('에러 계산 중..')
     resY = []
     cntIntrvl = len(self.intrvl)//2
     if self.lngth > len(self.Y):
@@ -806,7 +812,7 @@ class back:
     #작업 블럭
         #가로 크기
         for ii in range(vCnt+1):
-          print('에러 계산중...' + str(round(ii/(vCnt+1)*100,1)) + '%')
+          print('에러 계산 중...' + str(round(ii/(vCnt+1)*100,1)) + '%')
           # 세로 계산
           if ii != vCnt:
 
@@ -907,9 +913,9 @@ if __name__ == '__main__':
   #back.error()
 
   back.slctPhs(90)
-  back.slctIntrvl([0,1000], [1])
-  back.slctFft([[0,10,30,40]], [[1,2]])
-  back.genSgnl(1000, 10)
+  back.slctIntrvl([100,200, 300,400], [1,1])
+  back.slctFft([[10,20, 20,30, 30,40], [0,10, 11,12, 13,14] ], [[1.0,1.0,1.0],[1.0,1.0,1.0]])
+  back.genSgnl(10000 10)
   back.error()
 
 
