@@ -1,4 +1,4 @@
-#210525
+#210601 fft 평균 엉망 진창이던 문제 해결한 버전..
 import numpy as np
 from numpy import pi, sin, zeros, array
 from numpy.fft import fft
@@ -51,14 +51,14 @@ class back:
 
   def loadFile(self,  \
                _path = '',  \
-               _skipRows = 1, \
+               _skipRows = 2, \
                _maxRows = 2500):
     print('데이터 불러오는 중..')
   #변수 블럭
     resTitle  = []    
     tmpFile   = []
     resFile = np.loadtxt(_path,  \
-                         skiprows = _skipRows, max_rows = 2599).T
+                         skiprows = _skipRows).T
     cntData = resFile.shape[0]
     tmpFile = np.loadtxt(_path,  \
                         skiprows = 1,  \
@@ -85,7 +85,7 @@ class back:
 
 
 
-  def initData(self, maxLngth = 144000):
+  def initData(self, maxLngth = 12800):
   #변수 블럭
     lngthData  = self.oFile.shape[1]
     lngthRst = lngthData % maxLngth
@@ -94,21 +94,30 @@ class back:
 
   #작업 블럭
     if lngthData >= maxLngth:
-      resData   = zeros((cntData, maxLngth))
-      tmp1      = self.oFile[:,0:cnt*maxLngth].reshape(cntData, cnt, maxLngth).sum(axis = 1, keepdims = True).reshape(cntData,maxLngth)
-      tmp2      = self.oFile[:,cnt*maxLngth:].reshape(cntData, 1, lngthRst).sum(axis = 1, keepdims = True).reshape(cntData,lngthRst)
+      resData   = zeros((cntData, cnt, maxLngth))
+      resFFT    = zeros((cntData, cnt, maxLngth))
       
-      resData[:,:]          = resData[:,:] + tmp1
-      resData[:,:lngthRst]  = resData[:,:lngthRst] + tmp2
-      resData[:,:]          = resData[:,:] / (cnt + 1)
+      tmp1      = self.oFile[:,0:cnt*maxLngth].reshape(cntData, cnt, maxLngth)
+      tmp2      = self.oFile[:,cnt*maxLngth:].reshape(cntData, 1, lngthRst)
+      
+      resFFT[:,:,:]         =  resFFT[:,:,:] + fft(tmp1)/tmp1.shape[2]
+      resFFT[:,:,:lngthRst] = resFFT[:,:,:lngthRst] + fft(tmp2)/tmp2.shape[2]
 
+      resAmp = 2*abs(resFFT)
+      resAmp = resAmp.mean(axis = 1)[:,:maxLngth//2]
+
+      resPhs    = np.angle(resFFT, deg = False)
+      resPhs    = resPhs.mean(axis = 1 )[:,:maxLngth//2]
+
+      resData[:,:,:]          = resData[:,:,:] + tmp1
+      resData[:,:,:lngthRst]  = resData[:,:,:lngthRst] + tmp2
+
+      resData = resData.mean(axis = 1)
+      
       resLngth  = maxLngth
       resMean   = resData.mean(axis = 1, keepdims = True).reshape(cntData)
 
-      tmpFFT    = fft(resData - resMean.reshape(cntData, 1)) / maxLngth
-      resAmp    = 2*abs(tmpFFT)[:,:maxLngth//2]
-      resPhs    = np.angle(tmpFFT, deg = False)[:,:maxLngth//2]
-
+      
     else:
       resData   = zeros((cntData, lngthData))
       resData[:,:]  = self.oFile
@@ -368,7 +377,7 @@ class back:
       p.set_xlabel('Hz')
       if i == 0:
         p.set_ylabel('|∠X(n)|')
-      p.stem(self.ampLst[i], markerfmt = 'none')
+      p.plot(self.ampLst[i])
       l = 1 / len(self.intrvlData[i])
       plt.legend(['1Hz = ' + str(round(l, 8))], loc = 'upper right')
       plt.grid(True)
@@ -420,14 +429,17 @@ class back:
           return
         else:
           self.errMsg = ''
-  
-        res = self.copyAmp[i][srt:end]*_scale[i][j]
 
+        res = self.copyAmp[i][srt:end]*_scale[i][j]
 
         
 
+
+
+
+
   #결과 블럭
-    self.ampLst[i][srt:end] = res
+        self.ampLst[i][srt:end] = res
 
     self.fig2 = plt.figure('선택된 구간의 FFT')
     
@@ -820,7 +832,6 @@ class back:
             for jj in range(hCnt+1):
               # 가로 계산
               if jj != hCnt:
-                breakpoint()
                 A   = amp.reshape(lngth, 1)[ii*vrt:ii*vrt+vrt]
                 W   = 2*pi*f*n[ii*vrt:ii*vrt+vrt]
                 P   = phs.reshape(lngth, 1)[ii*vrt:ii*vrt+vrt] + (pi/2)
@@ -903,8 +914,8 @@ class back:
 if __name__ == '__main__':
   size = 2500
   back = back()
-  back.loadFile('data2.txt', 2, size)
-  back.slctData([2])
+  back.loadFile('six_data.txt', 2, size)
+  back.slctData([1])
   back.showData()
 
   #back.slctIntrvl([0,size], [1])
@@ -912,13 +923,14 @@ if __name__ == '__main__':
   #back.genSgnl(6000, 0.000443)
   #back.error()
 
-  back.slctPhs(90)
-  back.slctIntrvl([100,200, 300,400], [1,1])
-  back.slctFft([[10,20, 20,30, 30,40], [0,10, 11,12, 13,14] ], [[1.0,1.0,1.0],[1.0,1.0,1.0]])
-  back.genSgnl(10000 10)
-  back.error()
+##  back.slctPhs(90)
+##  back.slctIntrvl([0,12800], [1])
+##  back.slctFft([[10,20, 20,30, 30,40], [0,10, 11,12, 13,14] ], [[1.0,1.0,1.0],[1.0,1.0,1.0]])
+##  back.genSgnl(150000,10)
+##  back.error()
 
-
+  back.slctIntrvl([0,12800], [1])
+  back.slctFft([[30,40, 50, 60]], [[3.0, 2.0]])
   
   
 
