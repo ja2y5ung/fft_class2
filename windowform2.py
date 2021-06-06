@@ -457,28 +457,30 @@ class windowform2():
         self.widget_clear(self.samplechoiceframe)
         self.widget_clear(self.errorGraframe)
         
-        start_end_list3,exp_list3,count_list2_1,count_list2_2 = [], [], [], []
+        start_end_list3,exp_list3,count_list,count_list2 = [], [], [], []
         count,count2 = 0, 0 
         for st_en_box3 in self.phlist1:
             if count == int(self.phase_num_text_box.get()):
                 start_end_list3.append(count_list2_1)
-                count_list2_1 = []
+                count_list = []
                 count = 0
             a = list(map(int, st_en_box3.get().split(',')))
             for j in a:
-                count_list2_1.append(j)
+                count_list.append(j)
             count += 1
-        start_end_list3.append(count_list2_1)
+        start_end_list3.append(count_list)
 
-        for e_box in self.hzlist3:
+        for e_box in self.phlist3:
             if count2 == int(self.phase_num_text_box.get()):
-                exp_list3.append(count_list2_2)
-                count_list2_2 = []
+                exp_list3.append(count_list2)
+                count_list2 = []
                 count2 = 0
-            count_list2_2.append(float(e_box.get()))
+            count_list2.append(float(e_box.get()))
             count2 += 1
-        exp_list3.append(count_list2_2)
-            
+        exp_list3.append(count_list2)
+
+        print(start_end_list3)
+        print(exp_list3)
         self.work2.slctIntrvlPhs(start_end_list3, exp_list3)
         
         self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
