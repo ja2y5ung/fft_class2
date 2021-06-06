@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from ttkwidgets.frames import ScrolledFrame
-from ff2_210601 import back
+from ff2_210605 import back
 
 class windowform2():
 
@@ -117,7 +117,8 @@ class windowform2():
         self.file_tool_frame.pack(side="right",fill="both")
 
         self.c1.config(state="disabled")
-        print(self.CheckVar1.get())
+        self.work2.isGenSmpl = int(self.CheckVar1.get())
+        print(self.work2.isGenSmpl)
         
         self.start_file_num.set(" - Skip Header Line : " + str(self.start_data_box.get()))
         self.work2.loadFile(self.filename[0],int(self.start_data_box.get()))
