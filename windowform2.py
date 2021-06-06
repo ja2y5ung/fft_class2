@@ -360,8 +360,34 @@ class windowform2():
 
 
     def phase_select(self):
-
         self.widget_clear(self.phase_slct_frame)
+        self.widget_clear(self.samplechoiceframe)
+        self.widget_clear(self.errorGraframe)
+
+        start_end_list2,exp_list2,count_list,count_list2 = [], [], [], []
+        count,count2 = 0, 0 
+        for st_en_box2 in self.hzlist1:
+            if count == int(self.hz_range_text_box.get()):
+                start_end_list2.append(count_list)
+                count_list = []
+                count = 0
+            a = list(map(int, st_en_box2.get().split(',')))
+            for j in a:
+                count_list.append(j)
+            count += 1
+        start_end_list2.append(count_list)
+
+        for e_box in self.hzlist3:
+            if count2 == int(self.hz_range_text_box.get()):
+                exp_list2.append(count_list2)
+                count_list2 = []
+                count2 = 0
+            count_list2.append(float(e_box.get()))
+            count2 += 1
+        exp_list2.append(count_list2)
+
+        self.work2.slctFft(start_end_list2,exp_list2)
+
         
         self.phase_slct_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         self.phase_slct_frame.pack(side="top",fill = 'x')
@@ -376,36 +402,11 @@ class windowform2():
     
 
     def phase_num(self):
-
         if self.choice.get() == 1:
             self.widget_clear(self.phase_num_frame)
             self.widget_clear(self.ph_range_frame)
             self.widget_clear(self.samplechoiceframe)
             self.widget_clear(self.errorGraframe)
-       
-            start_end_list2,exp_list2,count_list,count_list2 = [], [], [], []
-            count,count2 = 0, 0 
-            for st_en_box2 in self.hzlist1:
-                if count == int(self.hz_range_text_box.get()):
-                    start_end_list2.append(count_list)
-                    count_list = []
-                    count = 0
-                a = list(map(int, st_en_box2.get().split(',')))
-                for j in a:
-                    count_list.append(j)
-                count += 1
-            start_end_list2.append(count_list)
-
-            for e_box in self.hzlist3:
-                if count2 == int(self.hz_range_text_box.get()):
-                    exp_list2.append(count_list2)
-                    count_list2 = []
-                    count2 = 0
-                count_list2.append(float(e_box.get()))
-                count2 += 1
-            exp_list2.append(count_list2)
-
-            self.work2.slctFft(start_end_list2,exp_list2)
 
             self.phase_num_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
             self.phase_num_frame.pack(side="top",fill = 'x')
