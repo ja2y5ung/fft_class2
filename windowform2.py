@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from ttkwidgets.frames import ScrolledFrame
-from ff2_210525 import back
+from ff2_210601 import back
 
 class windowform2():
 
@@ -107,11 +107,17 @@ class windowform2():
         self.start_data_box = self.text_input(self.file_tool_frame," < skip header(정수 입력) > ",5,"top","top")
         self.button_input(self.file_tool_frame,"입력",self.slct_data,"top")
         self.label_input(self.file_tool_frame, " ","top")
-
+        self.CheckVar1 = tk.IntVar()
+        self.c1 = tk.Checkbutton(self.file_name_frame, text = "If you are viewing generated data, please cheak here",variable = self.CheckVar1)
+        self.c1.pack()
+        
     def slct_data(self):
         self.widget_clear(self.file_tool_frame)
         self.file_tool_frame = tk.Frame(self.fileframe, width=300, height = 85)
         self.file_tool_frame.pack(side="right",fill="both")
+
+        self.c1.config(state="disabled")
+        print(self.CheckVar1.get())
         
         self.start_file_num.set(" - Skip Header Line : " + str(self.start_data_box.get()))
         self.work2.loadFile(self.filename[0],int(self.start_data_box.get()))
