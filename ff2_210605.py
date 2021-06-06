@@ -158,7 +158,8 @@ class back:
         if self.isGenSmpl == 1:
           return
         else:
-          self.initNewData()
+          return
+          #self.initNewData()
 
       else:
         resData   = zeros((cntData, lngthData))
@@ -610,7 +611,74 @@ class back:
 
 
 
-
+##  def slctIntrvlPhs(self):
+##    self.clcFft()
+##  #변수 블럭
+##    cntIntrvl = len(self.intrvl) // 2
+##    x, x1 = [], []
+##    y, y1 = [], []
+##
+##    for i in range(cntIntrvl):
+##      cntFFT = len(_intrvl[i]) // 2
+##      for j in range(cntFFT):
+##        srt = _intrvl[i][2*j]
+##        end = _intrvl[i][2*j+1]
+##        num = end - srt
+##
+##        
+##  #작업 블럭
+##        if num <= 1 or type(num) != int or srt < 0 or end < 0 :
+##          print('slctFft : 정수 입력 범위 값을 잘 못 입력했거나 초과함')
+##          self.errMsg = '정수 입력 범위를 확인해주세요'
+##          return
+##        else:
+##          self.errMsg = ''
+##
+##        res = self.copyAmp[i][srt:end]*_scale[i][j]
+##
+##        
+##
+##
+##
+##
+##
+##  #결과 블럭
+##        self.ampLst[i][srt:end] = res
+##
+##    self.fig2 = plt.figure('선택된 구간의 FFT')
+##    
+##    for i in range(cntIntrvl):
+##      cntFFT = len(_intrvl[i]) // 2
+##      for j in range(cntFFT):
+##        p = self.fig2.add_subplot(2, cntIntrvl, 1 + i + cntIntrvl)
+##        plt.cla()
+##        if i == 0:
+##          p.set_ylabel('|∠X(n)|')
+##        p.set_xlabel('Hz')
+##        p.plot(self.ampLst[i])
+##        plt.grid(True)
+##
+##    for i in range(cntIntrvl):
+##      cntFFT = len(_intrvl[i]) // 2
+##      for j in range(cntFFT):
+##        srt = _intrvl[i][2*j]
+##        end = _intrvl[i][2*j+1]
+##        num = end - srt
+##        x   = np.linspace(srt, end, num, endpoint = False)
+##        p = self.fig2.add_subplot(2, cntIntrvl, 1 + i + cntIntrvl)
+##        if i == 0:
+##          p.set_ylabel('|∠X(n)|')
+##        p.set_xlabel('Hz')
+##        l = 1 / len(self.intrvlData[i])
+##        p.plot(x,self.ampLst[i][srt:end])
+##        plt.legend(['1Hz = ' + str(round(l, 8))], loc = 'upper right')
+##        plt.grid(True)
+##
+##    self.fig2.tight_layout()
+##    plt.draw()
+##    if self.__ == 0:
+##      self.__ = 1
+##      self.fig2.show()
 
 
 
