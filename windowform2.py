@@ -118,7 +118,6 @@ class windowform2():
 
         self.c1.config(state="disabled")
         self.work2.isGenSmpl = int(self.CheckVar1.get())
-        print(self.work2.isGenSmpl)
         
         self.start_file_num.set(" - Skip Header Line : " + str(self.start_data_box.get()))
         self.work2.loadFile(self.filename[0],int(self.start_data_box.get()))
@@ -254,6 +253,8 @@ class windowform2():
     def hz_range_num(self):
         self.widget_clear(self.hzrangeSlctframe)
         self.widget_clear(self.hz_range_frame)
+        self.widget_clear(self.samplechoiceframe)
+        self.widget_clear(self.errorGraframe) 
         
         start_end_list,exp_list = [], []
         for st_en_box in self.list1:
@@ -327,7 +328,6 @@ class windowform2():
                 count_list.append(j)
             count += 1
         start_end_list2.append(count_list)
-        print(start_end_list2)
 
         for e_box in self.hzlist3:
             if count2 == int(self.hz_range_text_box.get()):
@@ -337,7 +337,6 @@ class windowform2():
             count_list2.append(float(e_box.get()))
             count2 += 1
         exp_list2.append(count_list2)
-        print(exp_list2)
 
         self.work2.slctFft(start_end_list2,exp_list2)        
         self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
