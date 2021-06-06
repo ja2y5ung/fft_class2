@@ -10,7 +10,7 @@ class windowform2():
 
         self.window = tk.Tk()
         self.window.title('control')
-        self.window.geometry("500x900+50+50")
+        self.window.geometry("520x900+50+50")
         self.window.resizable(True,True)
         self.mainMenu = tk.Menu(self.window)
 
@@ -52,6 +52,10 @@ class windowform2():
         self.hzrangeSlctframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         #choice hz range frame
         self.hz_range_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
+        #phase_num_frame
+        self.phase_num_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
+        #pahse_select_frame
+        self.ph_range_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         #sample choice frame
         self.samplechoiceframe = tk.Frame(self.tool_frame.interior, width=300, height = 150)
         #error graph frame
@@ -205,7 +209,9 @@ class windowform2():
         self.widget_clear(self.hzrangeSlctframe)
         self.widget_clear(self.hz_range_frame)
         self.widget_clear(self.samplechoiceframe)
-
+        self.widget_clear(self.phase_num_frame)
+        self.widget_clear(self.ph_range_frame)
+        
         if self.num[0] == 2:
             self.work2.slctPhs(float(self.phase_text_box.get()))
         
@@ -254,7 +260,10 @@ class windowform2():
         self.widget_clear(self.hzrangeSlctframe)
         self.widget_clear(self.hz_range_frame)
         self.widget_clear(self.samplechoiceframe)
-        self.widget_clear(self.errorGraframe) 
+        self.widget_clear(self.errorGraframe)
+        self.widget_clear(self.phase_num_frame)
+        self.widget_clear(self.ph_range_frame)
+        
         
         start_end_list,exp_list = [], []
         for st_en_box in self.list1:
@@ -305,13 +314,63 @@ class windowform2():
 
             self.nrf_buttonframe=tk.Frame(self.hz_range_frame, width=300, height = 350)
             self.nrf_buttonframe.pack(side="bottom")  
-            self.button_input(self.nrf_buttonframe,"입   력",self.sample_choice,"left")             
+            self.button_input(self.nrf_buttonframe,"입   력",self.phase_num,"left")             
             self.hzrbuttonframe = tk.Frame(self.hzrangeSlctframe, width=300, height = 350)
             self.hzrbuttonframe.pack(side="bottom")              
             self.button_input(self.hzrbuttonframe,"갯수 리셋",self.hz_range_num,"left")
         else:
             pass
 
+
+    def phase_num(self):
+        self.widget_clear(self.phase_num_frame)
+        self.widget_clear(self.ph_range_frame)
+        self.widget_clear(self.samplechoiceframe)
+        self.widget_clear(self.errorGraframe)
+   
+        
+        self.phase_num_frame = tk.Frame(self.tool_frame.interior, width=300, height = 150)
+        self.phase_num_frame.pack(side="top",fill = 'x')
+        self.phase_num_text_box = self.text_input(self.phase_num_frame,"  ● 페이즈 갯수 입력 (1이상 정수만 입력)   ",10,"top","top")
+        self.phase_num_buttonframe = tk.Frame(self.phase_num_frame, width=300, height = 350)
+        self.phase_num_buttonframe.pack(side="bottom")        
+        self.button_input(self.phase_num_buttonframe,"입   력",self.phase_select,"left")
+
+    def phase_select(self):
+        self.widget_clear(self.ph_range_frame)
+        self.widget_clear(self.phase_num_buttonframe)
+        
+        c = self.phase_num_text_box.get()
+        if self.phase_num_text_box.get() != '' and self.count == 0 and int(self.phase_num_text_box.get()) > 0:
+            self.phlist1, self.phlist2, self.phlist3 = [], [], []
+            self.ph_range_frame = tk.Frame(self.tool_frame.interior, width=300, height = 350)
+            self.ph_range_frame.pack(side="top",fill = 'x')
+            self.label_input(self.ph_range_frame,"  ","top")
+            self.label_input(self.ph_range_frame," ● 페이즈 입력","top")
+            for i in range( int(self.phase_num_text_box.get())):
+                rng_exp_frame2 = tk.Frame(self.ph_range_frame, width=300, height = 350)
+                self.phlist2.append(rng_exp_frame2)
+            for j in range(int(self.phase_num_text_box.get())):
+                self.label_input(self.ph_range_frame,"- " + chr(j+65) + " section - ","top")
+                rng_box = self.text_input2(self.phlist2[j], self.phlist2[j]," 범위 : ",10,"left","left")
+                exp_box = self.text_input2(self.phlist2[j], self.phlist2[j],"   각도 : ",10,"left","left")
+                self.label_input(self.phlist2[j]," ","left")
+                self.phlist2[j].pack(side="top",fill = 'x')
+                self.phlist1.append(rng_box)
+                self.phlist3.append(exp_box)
+                
+            self.label_input(self.ph_range_frame,"○ 100,200처럼 범위 사이를\n 쉼표로 구분 해주세요.","top")
+##            for i in range(len(self.work2.maxFft)):
+##                self.label_input(self.hz_range_frame,"○ 0~" + str(self.work2.maxFft[i]) +" 사이로 입력해주세요.","top")
+
+            self.ph_buttonframe=tk.Frame(self.ph_range_frame, width=300, height = 350)
+            self.ph_buttonframe.pack(side="bottom")  
+            self.button_input(self.ph_buttonframe,"입   력", self.sample_choice,"left")             
+            self.phase_num_buttonframe = tk.Frame(self.phase_num_frame, width=300, height = 350)
+            self.phase_num_buttonframe.pack(side="bottom")                   
+            self.button_input(self.phase_num_buttonframe,"갯수 리셋",self.phase_num,"left")
+        else:
+            pass
 
     def sample_choice(self):
         self.widget_clear(self.samplechoiceframe)
