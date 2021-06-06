@@ -428,8 +428,8 @@ class back:
 
         plt.legend(pltLgn, loc = 'lower left')
         self.fig1.tight_layout()
-        plt.draw()
-        #self.fig1.show()
+        #plt.draw()
+        self.fig1.show()
 
         self.clcFft()
 
@@ -508,7 +508,8 @@ class back:
       plt.grid(True)
 
     self.fig2.tight_layout()
-    plt.draw()
+    #plt.draw()
+    self.fig2.show()
     if self._ == 0:
 
       self._ = 1
@@ -600,7 +601,8 @@ class back:
         plt.grid(True)
 
     self.fig2.tight_layout()
-    plt.draw()
+    #plt.draw()
+    self.fig2.show()
     if self.__ == 0:
       self.__ = 1
       self.fig2.show()
@@ -772,8 +774,8 @@ class back:
     plt.legend(pltLgn, loc = 'lower left')
     plt.grid(True)
     self.fig1.tight_layout()
-    plt.draw()
-    #self.fig1.show()
+    #plt.draw()
+    self.fig1.show()
     
 
 
